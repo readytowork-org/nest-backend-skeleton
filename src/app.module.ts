@@ -7,6 +7,7 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { HealthModule } from '@modules/healthz/healthz.module';
 import { UsersModule } from './modules/users/users.module';
 import { TodosModule } from './modules';
+import { DrizzleModule } from './db';
 
 // import the config module
 @Module({
@@ -14,6 +15,7 @@ import { TodosModule } from './modules';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    DrizzleModule,
     LoggerModule,
     HealthModule,
     AuthModule,
