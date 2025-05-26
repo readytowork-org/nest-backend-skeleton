@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { LoggerService, ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 
 async function bootstrap() {
-  const bootstrapLogger = AppLogger.forRoot('NestJS-App') as LoggerService;
+  const bootstrapLogger = AppLogger.forRoot('NestJS-App');
   const app = await NestFactory.create(AppModule, {
     logger: bootstrapLogger,
   });
@@ -60,4 +60,8 @@ async function bootstrap() {
     `Swagger documentation is available at: http://localhost:${port}/api`,
   );
 }
-bootstrap();
+
+bootstrap().catch((error) => {
+  console.error('Failed to start application:', error);
+  process.exit(1);
+});

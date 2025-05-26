@@ -1,10 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+import { AppLogger } from '@app/config/logger/app-logger.service';
+import { UsersService } from '@app/modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AppLogger } from '@app/config/logger/app-logger.service';
-import { ConfigService } from '@nestjs/config';
-import { AuthUser, JwtPayload } from '../interfaces/auth.interface';
-import { UsersService } from '@app/modules/users/users.service';
+import { AuthUser, JwtPayload } from '../types/auth.types';
+
+interface ValidatedUser {
+  id: number;
+  email: string;
+  name: string;
+  authProvider: string;
+  profilePicture: string | null;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -24,22 +34,46 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
       secretOrKey: jwtSecret,
     });
+
+    this.logger.setContext(JwtStrategy.name);
+    this.logger.log('JWT authentication strategy initialized');
   }
 
   async validate(payload: JwtPayload): Promise<AuthUser> {
-    const user = await this.userService.findUnique(payload.email);
+    try {
+      this.logger.debug(`Validating JWT payload for user: ${payload.email}`);
 
-    if (!user) {
-      this.logger.warn(`JWT validation failed for user ID: ${payload.sub}`);
-      throw new UnauthorizedException('Invalid token');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const userResult = await this.userService.findUnique(payload.email);
+
+      if (!userResult) {
+        this.logger.warn(
+          `JWT validation failed - user not found for email: ${payload.email} (ID: ${payload.sub})`,
+        );
+        throw new UnauthorizedException('Invalid token - user not found');
+      }
+
+      // Type assertion to our known interface
+      const user = userResult as ValidatedUser;
+
+      this.logger.debug(
+        `JWT validated successfully for user: ${user.id} (${user.email})`,
+      );
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name || undefined,
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
+      this.logger.error(
+        `JWT validation error: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw new UnauthorizedException('Token validation failed');
     }
-
-    this.logger.debug(`JWT validated for user: ${user.id}`);
-
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name || undefined,
-    };
   }
 }

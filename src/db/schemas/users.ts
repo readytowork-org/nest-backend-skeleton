@@ -16,7 +16,7 @@ export const usersTable = mysqlTable(
     password: varchar({ length: 255 }).notNull(),
     name: varchar({ length: 255 }).notNull(),
     authProvider: varchar('auth_provider', { length: 255 }).notNull(),
-    profileProvider: varchar('profile_picture', { length: 255 }).notNull(),
+    profilePicture: varchar('profile_picture', { length: 255 }),
     ...timestamps,
   },
   (table) => [
