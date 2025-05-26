@@ -6,7 +6,6 @@ import {
   unique,
   serial,
   varchar,
-  datetime,
 } from 'drizzle-orm/mysql-core';
 
 export const usersTable = mysqlTable(

@@ -3,9 +3,10 @@ import { CreateTodoDto, UpdateTodoDto } from './dto/todo.dto';
 import { DrizzleService } from '@app/db';
 import { todosTable } from '@app/db/schemas/todos';
 import { and, eq } from 'drizzle-orm';
+import { TodoRepositoryInterface } from './interface/todos.repo.interface';
 
 @Injectable()
-export class TodosRepository {
+export class TodosRepository implements TodoRepositoryInterface {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async create(userId: number, createTodoDto: CreateTodoDto) {

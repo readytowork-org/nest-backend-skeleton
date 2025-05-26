@@ -18,19 +18,19 @@ export class UsersService {
     },
   ];
 
-  async findOne(username: string): Promise<User | undefined> {
+  findOne(username: string): any {
     return this.users.find((user) => user.username === username);
   }
 
-  async findUnique(username: string): Promise<User | undefined> {
+  findUnique(username: string): any {
     return this.users.find((user) => user.username === username);
   }
 
-  async create(user: any): Promise<any | undefined> {
+  create(user: any): any {
     return this.users.push(user);
   }
 
-  async update(userId: string, user: any): Promise<any | undefined> {
+  update(userId: string, user: any): any {
     return this.users.push(user);
   }
 }
