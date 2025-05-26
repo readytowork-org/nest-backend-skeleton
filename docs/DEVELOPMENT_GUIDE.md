@@ -1,287 +1,217 @@
 # Development Guide
 
-This document provides a comprehensive guide to the development workflow, project structure, and best practices for the NestJS Todo application.
+## Prerequisites
 
-## Table of Contents
+- Node.js (v18 or later)
+- Yarn or npm
+- PostgreSQL (v14 or later)
+- Git
 
-1. [Project Structure](#project-structure)
-2. [Development Workflow](#development-workflow)
-3. [Adding a New Module](#adding-a-new-module)
-4. [Import Conventions](#import-conventions)
-5. [Coding Standards](#coding-standards)
-6. [Testing](#testing)
-7. [Documentation](#documentation)
+## Initial Setup
 
-## Project Structure
+1. Clone the repository:
 
-The application follows a modular, domain-driven structure with clear separation of concerns:
-
+```bash
+git clone <repository-url>
+cd nestjs-skeleton
 ```
-src/
-├── main.ts                          # Application entry point
-├── app.module.ts                    # Root module of the application
-├── modules/                         # Feature modules
-│   ├── todos/                       # Todo feature module
-│   │   ├── dto/                     # Data Transfer Objects
-│   │   ├── entities/                # Entity definitions (if any)
-│   │   ├── repositories/            # Repository layer
-│   │   ├── todos.controller.ts      # HTTP controller
-│   │   ├── todos.service.ts         # Business logic
-│   │   └── todos.module.ts          # Module definition
-│   ├── auth/                        # Authentication module
-│   └── users/                       # User module
-├── common/                          # Shared resources
-│   ├── decorators/                  # Custom decorators
-│   ├── filters/                     # Exception filters
-│   ├── guards/                      # Global guards
-│   ├── interceptors/                # Global interceptors
-│   ├── interfaces/                  # Common interfaces
-│   ├── middleware/                  # Custom middleware
-│   ├── pipes/                       # Custom pipes
-│   └── logger/                      # Logger implementation
-├── config/                          # Configuration
-│   ├── env.validation.ts            # Environment validation
-├── core/                            # Core functionality
-│   ├── database/                    # Database related code
-│   │   └── prisma/                  # Prisma ORM
-│   ├── exceptions/                  # Custom exceptions
-│   └── utilities/                   # Common utility functions
-└── prisma/                          # Prisma schema and migrations
+
+2. Install dependencies:
+
+```bash
+yarn install
 ```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+4. Configure your `.env` file with:
+
+- Database credentials
+- JWT secret
+- Other environment-specific variables
 
 ## Development Workflow
 
-### Setting Up Your Development Environment
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   yarn install
-   ```
-3. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-4. Generate Prisma client:
-   ```bash
-   yarn prisma:generate
-   ```
-5. Run database migrations:
-   ```bash
-   yarn prisma:migrate:dev
-   ```
-6. Start the development server:
-   ```bash
-   yarn start:dev
-   ```
-
-### Development Process
-
-1. **Create a feature branch** from `main`:
-
-   ```bash
-   git checkout -b feature/my-new-feature
-   ```
-
-2. **Implement your changes** following the project structure and coding standards
-
-3. **Write tests** for your implementation
-
-4. **Run linting** to ensure code quality:
-
-   ```bash
-   yarn lint
-   ```
-
-5. **Run tests** to ensure functionality:
-
-   ```bash
-   yarn test
-   ```
-
-6. **Submit a pull request** for code review
-
-## Adding a New Module
-
-When adding a new feature module, follow these steps:
-
-1. **Create the module structure** following the domain-driven design pattern:
-
-   ```bash
-   mkdir -p src/modules/your-module/{dto,repositories,entities}
-   ```
-
-2. **Create the main module files**:
-
-   - `your-module.module.ts`: Module definition
-   - `your-module.controller.ts`: HTTP endpoints
-   - `your-module.service.ts`: Business logic
-
-3. **Define your DTOs** in the `dto` folder for request validation and documentation
-
-4. **Implement your repositories** in the `repositories` folder for data access
-
-5. **Register your module** in the main `app.module.ts` file
-
-### Example: Creating a Comments Module
-
-Here's an example of adding a new "comments" module for todo items:
-
-1. First, create the module structure:
-
-   ```bash
-   mkdir -p src/modules/comments/{dto,repositories}
-   ```
-
-2. Create the module files:
-
-   ```bash
-   touch src/modules/comments/comments.module.ts
-   touch src/modules/comments/comments.controller.ts
-   touch src/modules/comments/comments.service.ts
-   touch src/modules/comments/dto/comment.dto.ts
-   touch src/modules/comments/repositories/comment.repository.ts
-   ```
-
-3. Implement the module definition in `comments.module.ts`:
-
-   ```typescript
-   import { Module } from '@nestjs/common';
-   import { CommentsController } from './comments.controller';
-   import { CommentsService } from './comments.service';
-   import { CommentRepository } from './repositories/comment.repository';
-
-   @Module({
-     controllers: [CommentsController],
-     providers: [CommentsService, CommentRepository],
-     exports: [CommentsService],
-   })
-   export class CommentsModule {}
-   ```
-
-4. Register the module in `app.module.ts`:
-
-   ```typescript
-   import { CommentsModule } from '@modules/comments/comments.module';
-
-   @Module({
-     imports: [
-       // ... other modules
-       CommentsModule,
-     ],
-   })
-   export class AppModule {}
-   ```
-
-## Import Conventions
-
-Use path aliases for clean and maintainable imports:
-
-```typescript
-// Correct (using path aliases)
-import { CommentsService } from '@modules/comments/comments.service';
-import { AppLogger } from '@common/logger/app-logger.service';
-import { PrismaService } from '@core/database/prisma/prisma.service';
-
-// Incorrect (using relative paths)
-import { CommentsService } from '../../modules/comments/comments.service';
-import { AppLogger } from '../../../common/logger/app-logger.service';
-```
-
-The following path aliases are available:
-
-| Alias        | Points to       | Use for                  |
-| ------------ | --------------- | ------------------------ |
-| `@app/*`     | `src/*`         | Root application imports |
-| `@modules/*` | `src/modules/*` | Feature modules          |
-| `@common/*`  | `src/common/*`  | Common/shared utilities  |
-| `@core/*`    | `src/core/*`    | Core functionality       |
-| `@config/*`  | `src/config/*`  | Configuration            |
-
-## Coding Standards
-
-- Follow ESLint and Prettier rules defined in the project
-- Use TypeScript's strong typing system for all variables and functions
-- Document public APIs and complex functions with JSDoc comments
-- Follow the Single Responsibility Principle (SRP)
-- Use Dependency Injection for component dependencies
-- Make use of NestJS decorators for defining routes, validation, etc.
-
-### Naming Conventions
-
-- **Files**: Use kebab-case for file names (`todo.repository.ts`, `create-todo.dto.ts`)
-- **Classes**: Use PascalCase for class names (`TodoService`, `CreateTodoDto`)
-- **Methods & Properties**: Use camelCase for methods and properties (`findAllByUser`, `userId`)
-- **Interfaces**: Use PascalCase prefixed with `I` (`ITodoService`, `IUser`)
-- **Enums**: Use PascalCase (`TodoStatus`, `UserRole`)
-
-## Testing
-
-The project uses Jest for testing:
-
-- **Unit tests**: Tests individual components in isolation
-- **Integration tests**: Tests component interactions
-- **E2E tests**: Tests the entire application flow
-
-Follow these naming conventions for test files:
-
-- Unit tests: `*.spec.ts`
-- E2E tests: `*.e2e-spec.ts`
-
-### Running Tests
+### Starting the Development Server
 
 ```bash
-# Run all tests
+# Start in development mode with hot-reload
+yarn start:dev
+
+# Start in debug mode
+yarn start:debug
+
+# Start in production mode
+yarn build
+yarn start:prod
+```
+
+### Database Management
+
+```bash
+# Generate migrations
+yarn drizzle-kit generate
+
+# Run migrations
+yarn migrate
+
+# Seed the database
+yarn seed
+```
+
+### Testing
+
+```bash
+# Run unit tests
 yarn test
-
-# Run tests in watch mode
-yarn test:watch
-
-# Run tests with coverage
-yarn test:cov
 
 # Run e2e tests
 yarn test:e2e
+
+# Generate test coverage
+yarn test:cov
 ```
 
-## Documentation
+### Code Quality
+
+```bash
+# Lint code
+yarn lint
+
+# Format code
+yarn format
+
+# Check types
+yarn type-check
+```
+
+## Project Structure
+
+```
+src/
+├── config/         # Configuration files
+├── modules/        # Feature modules
+├── common/         # Shared utilities
+├── database/       # Database configuration
+└── main.ts         # Application entry point
+```
+
+## Best Practices
+
+1. **Code Organization**
+
+   - Keep modules focused and single-responsibility
+   - Use path aliases for imports
+   - Follow the established folder structure
+
+2. **Testing**
+
+   - Write unit tests for services and utilities
+   - Write e2e tests for API endpoints
+   - Maintain good test coverage
+
+3. **Error Handling**
+
+   - Use custom exception filters
+   - Implement proper error logging
+   - Return consistent error responses
+
+4. **Security**
+   - Never commit sensitive data
+   - Use environment variables for secrets
+   - Implement proper authentication/authorization
+
+## Common Tasks
+
+### Adding a New Module
+
+1. Generate module:
+
+```bash
+nest g module modules/your-module
+```
+
+2. Create necessary files:
+
+```bash
+nest g controller modules/your-module
+nest g service modules/your-module
+```
+
+3. Update module configuration in `src/config/modules.config.ts`
+
+### Database Changes
+
+1. Update schema in `src/database/schema`
+2. Generate migration:
+
+```bash
+yarn drizzle-kit generate
+```
+
+3. Run migration:
+
+```bash
+yarn migrate
+```
 
 ### API Documentation
 
-The API is documented using Swagger/OpenAPI. To access the documentation:
+- Swagger UI is available at `/api/docs`
+- Update DTOs with proper decorators
+- Add descriptive comments for endpoints
 
-1. Start the server: `yarn start:dev`
-2. Navigate to: `http://localhost:3000/api`
+## Troubleshooting
 
-### Code Documentation
+### Common Issues
 
-- Use JSDoc comments for functions, classes, and methods
-- Document parameters, return types, and potential exceptions
-- Keep documentation up to date with code changes
+1. **Database Connection**
 
-### Adding Swagger Documentation
+   - Check PostgreSQL is running
+   - Verify credentials in `.env`
+   - Check database exists
 
-Use NestJS Swagger decorators to document your APIs:
+2. **Port Conflicts**
 
-```typescript
-@ApiTags('Comments')
-@Controller('comments')
-export class CommentsController {
-  @Post()
-  @ApiOperation({ summary: 'Create a new comment' })
-  @ApiResponse({ status: 201, description: 'Comment created successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid input' })
-  async createComment(@Body() createCommentDto: CreateCommentDto) {
-    // Implementation
-  }
-}
+   - Check if port 3000 is available
+   - Update port in `.env` if needed
+
+3. **Type Errors**
+   - Run `yarn type-check`
+   - Update TypeScript types
+   - Check for missing dependencies
+
+## Deployment
+
+1. Build the application:
+
+```bash
+yarn build
 ```
 
-### Contributing to Documentation
+2. Set production environment variables
 
-If you modify existing modules or add new ones, make sure to:
+3. Start the server:
 
-1. Update or add API documentation using Swagger decorators
-2. Update relevant README or markdown files
-3. Document complex business logic with inline comments
-4. Update this development guide if necessary
+```bash
+yarn start:prod
+```
+
+## Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run tests and linting
+4. Submit a pull request
+
+## Support
+
+For issues and questions:
+
+- Create a GitHub issue
+- Check existing documentation
+- Review NestJS documentation
