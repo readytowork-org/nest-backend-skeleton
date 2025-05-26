@@ -54,7 +54,7 @@ yarn start:prod
 
 ```bash
 # Generate migrations
-yarn drizzle-kit generate
+yarn drizzle-kit generate:pg
 
 # Run migrations
 yarn migrate
@@ -93,11 +93,25 @@ yarn type-check
 
 ```
 src/
-├── config/         # Configuration files
-├── modules/        # Feature modules
-├── common/         # Shared utilities
-├── database/       # Database configuration
-└── main.ts         # Application entry point
+├── app.controller.ts    # Root controller
+├── app.module.ts        # Root module
+├── app.service.ts       # Root service
+├── main.ts             # Application entry point
+├── config/             # Configuration files
+├── common/             # Shared utilities and decorators
+├── db/                 # Database related files
+│   ├── schemas/        # Drizzle schema definitions
+│   ├── drizzle/        # Drizzle ORM configuration
+│   │   ├── db.client.ts    # Database client setup
+│   │   ├── drizzle.module.ts # Drizzle module configuration
+│   │   └── drizzle.service.ts # Drizzle service
+│   └── index.ts        # Database exports
+└── modules/            # Feature modules
+    ├── auth/           # Authentication module
+    ├── users/          # Users module
+    ├── todos/          # Todos module
+    ├── healthz/        # Health check module
+    └── index.ts        # Module exports
 ```
 
 ## Best Practices
@@ -146,11 +160,11 @@ nest g service modules/your-module
 
 ### Database Changes
 
-1. Update schema in `src/database/schema`
+1. Update schema in `src/db/schemas`
 2. Generate migration:
 
 ```bash
-yarn drizzle-kit generate
+yarn drizzle-kit generate:pg
 ```
 
 3. Run migration:
