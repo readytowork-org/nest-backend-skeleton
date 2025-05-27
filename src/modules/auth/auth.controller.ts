@@ -45,6 +45,21 @@ export class AuthController {
     private readonly logger: AppLogger,
   ) {}
 
+  @Get('/test')
+  test() {
+    this.logger.debug('Debug endpoint called - testing logger functionality');
+    this.logger.log('Test log message');
+    this.logger.warn('Test warning message');
+    this.logger.error('Test error message');
+
+    return {
+      message: 'Debug endpoint working',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      port: process.env.PORT || '9001',
+    };
+  }
+
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new user' })

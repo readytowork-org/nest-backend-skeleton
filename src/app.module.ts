@@ -8,12 +8,16 @@ import { HealthModule } from '@modules/healthz/healthz.module';
 import { UsersModule } from './modules/users/users.module';
 import { TodosModule } from './modules';
 import { DrizzleModule } from './db';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 // import the config module
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production',
     }),
     DrizzleModule,
     LoggerModule,
