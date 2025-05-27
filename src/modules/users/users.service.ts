@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@app/db';
-import { usersTable } from '@app/db/schemas/users';
+import { userSchema } from '@app/db/schemas/users';
 import { eq } from 'drizzle-orm';
 import { User, NewUser } from './types/user.types';
 
@@ -11,8 +11,8 @@ export class UsersService {
   async findOne(username: string): Promise<User | null> {
     const users = await this.drizzle.db
       .select()
-      .from(usersTable)
-      .where(eq(usersTable.name, username))
+      .from(userSchema)
+      .where(eq(userSchema.name, username))
       .limit(1);
 
     if (!users.length) return null;
@@ -23,8 +23,8 @@ export class UsersService {
   async findUnique(email: string): Promise<User | null> {
     const users = await this.drizzle.db
       .select()
-      .from(usersTable)
-      .where(eq(usersTable.email, email))
+      .from(userSchema)
+      .where(eq(userSchema.email, email))
       .limit(1);
 
     if (!users.length) return null;
@@ -35,8 +35,8 @@ export class UsersService {
   async findById(id: number): Promise<User | null> {
     const users = await this.drizzle.db
       .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, id))
+      .from(userSchema)
+      .where(eq(userSchema.id, id))
       .limit(1);
 
     if (!users.length) return null;
@@ -47,7 +47,7 @@ export class UsersService {
   async create(
     userData: Omit<NewUser, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,
   ): Promise<User> {
-    const result = await this.drizzle.db.insert(usersTable).values({
+    const result = await this.drizzle.db.insert(userSchema).values({
       ...userData,
       createdAt: new Date(),
     });
@@ -55,8 +55,8 @@ export class UsersService {
     // Get the created user
     const users = await this.drizzle.db
       .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, result[0].insertId))
+      .from(userSchema)
+      .where(eq(userSchema.id, result[0].insertId))
       .limit(1);
 
     if (!users.length) {
@@ -71,18 +71,18 @@ export class UsersService {
     userData: Partial<Omit<NewUser, 'id' | 'createdAt'>>,
   ): Promise<User> {
     await this.drizzle.db
-      .update(usersTable)
+      .update(userSchema)
       .set({
         ...userData,
         updatedAt: new Date(),
       })
-      .where(eq(usersTable.id, userId));
+      .where(eq(userSchema.id, userId));
 
     // Get the updated user
     const users = await this.drizzle.db
       .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, userId))
+      .from(userSchema)
+      .where(eq(userSchema.id, userId))
       .limit(1);
 
     if (!users.length) {

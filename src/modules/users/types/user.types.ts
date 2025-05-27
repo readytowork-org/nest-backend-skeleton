@@ -1,7 +1,7 @@
-import { usersTable } from '@app/db/schemas/users';
+import { userSchema } from '@app/db/schemas/users';
 
-export type User = typeof usersTable.$inferSelect;
-export type NewUser = typeof usersTable.$inferInsert;
+export type User = typeof userSchema.$inferSelect;
+export type NewUser = typeof userSchema.$inferInsert;
 
 // Explicit interface for better type safety - matching the actual database schema
 export interface UserEntity {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto, UpdateTodoDto } from './dto/todo.dto';
 import { DrizzleService } from '@app/db';
-import { todosTable } from '@app/db/schemas/todos';
+import { todoSchema } from '@app/db/schemas/todos';
 import { and, eq, isNull } from 'drizzle-orm';
 import { TodoRepositoryInterface } from './interface/todos.repo.interface';
 import { Todo } from './types/todo.types';
@@ -11,7 +11,7 @@ export class TodosRepository implements TodoRepositoryInterface {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async create(userId: number, createTodoDto: CreateTodoDto): Promise<Todo> {
-    const result = await this.drizzle.db.insert(todosTable).values({
+    const result = await this.drizzle.db.insert(todoSchema).values({
       ...createTodoDto,
       dueDate: createTodoDto.dueDate ? new Date(createTodoDto.dueDate) : null,
       userId,
@@ -21,8 +21,8 @@ export class TodosRepository implements TodoRepositoryInterface {
     // Get the created todo
     const todos = await this.drizzle.db
       .select()
-      .from(todosTable)
-      .where(eq(todosTable.id, result[0].insertId))
+      .from(todoSchema)
+      .where(eq(todoSchema.id, result[0].insertId))
       .limit(1);
 
     return todos[0];
@@ -31,25 +31,25 @@ export class TodosRepository implements TodoRepositoryInterface {
   async findAll(userId: number): Promise<Todo[]> {
     return this.drizzle.db
       .select()
-      .from(todosTable)
+      .from(todoSchema)
       .where(
         and(
-          eq(todosTable.userId, userId),
-          isNull(todosTable.deletedAt), // Only get non-deleted todos
+          eq(todoSchema.userId, userId),
+          isNull(todoSchema.deletedAt), // Only get non-deleted todos
         ),
       )
-      .orderBy(todosTable.createdAt);
+      .orderBy(todoSchema.createdAt);
   }
 
   async findOne(id: number, userId: number): Promise<Todo[]> {
     return this.drizzle.db
       .select()
-      .from(todosTable)
+      .from(todoSchema)
       .where(
         and(
-          eq(todosTable.id, id),
-          eq(todosTable.userId, userId),
-          isNull(todosTable.deletedAt), // Only get non-deleted todos
+          eq(todoSchema.id, id),
+          eq(todoSchema.userId, userId),
+          isNull(todoSchema.deletedAt), // Only get non-deleted todos
         ),
       )
       .limit(1);
@@ -61,7 +61,7 @@ export class TodosRepository implements TodoRepositoryInterface {
     updateTodoDto: UpdateTodoDto,
   ): Promise<Todo> {
     await this.drizzle.db
-      .update(todosTable)
+      .update(todoSchema)
       .set({
         ...updateTodoDto,
         dueDate: updateTodoDto.dueDate
@@ -71,21 +71,21 @@ export class TodosRepository implements TodoRepositoryInterface {
       })
       .where(
         and(
-          eq(todosTable.id, id),
-          eq(todosTable.userId, userId),
-          isNull(todosTable.deletedAt), // Only update non-deleted todos
+          eq(todoSchema.id, id),
+          eq(todoSchema.userId, userId),
+          isNull(todoSchema.deletedAt), // Only update non-deleted todos
         ),
       );
 
     // Get the updated todo
     const todos = await this.drizzle.db
       .select()
-      .from(todosTable)
+      .from(todoSchema)
       .where(
         and(
-          eq(todosTable.id, id),
-          eq(todosTable.userId, userId),
-          isNull(todosTable.deletedAt),
+          eq(todoSchema.id, id),
+          eq(todoSchema.userId, userId),
+          isNull(todoSchema.deletedAt),
         ),
       )
       .limit(1);
@@ -96,13 +96,13 @@ export class TodosRepository implements TodoRepositoryInterface {
   // Soft delete (sets deletedAt timestamp)
   async remove(id: number, userId: number): Promise<void> {
     await this.drizzle.db
-      .update(todosTable)
+      .update(todoSchema)
       .set({ deletedAt: new Date() })
       .where(
         and(
-          eq(todosTable.id, id),
-          eq(todosTable.userId, userId),
-          isNull(todosTable.deletedAt), // Only soft-delete non-deleted todos
+          eq(todoSchema.id, id),
+          eq(todoSchema.userId, userId),
+          isNull(todoSchema.deletedAt), // Only soft-delete non-deleted todos
         ),
       );
   }
@@ -110,19 +110,19 @@ export class TodosRepository implements TodoRepositoryInterface {
   // Hard delete (actually removes from database) - optional method
   async hardDelete(id: number, userId: number): Promise<void> {
     await this.drizzle.db
-      .delete(todosTable)
-      .where(and(eq(todosTable.id, id), eq(todosTable.userId, userId)));
+      .delete(todoSchema)
+      .where(and(eq(todoSchema.id, id), eq(todoSchema.userId, userId)));
   }
 
   async exists(id: number, userId: number): Promise<boolean> {
     const todo = await this.drizzle.db
-      .select({ id: todosTable.id })
-      .from(todosTable)
+      .select({ id: todoSchema.id })
+      .from(todoSchema)
       .where(
         and(
-          eq(todosTable.id, id),
-          eq(todosTable.userId, userId),
-          isNull(todosTable.deletedAt), // Only check non-deleted todos
+          eq(todoSchema.id, id),
+          eq(todoSchema.userId, userId),
+          isNull(todoSchema.deletedAt), // Only check non-deleted todos
         ),
       )
       .limit(1);

@@ -13,7 +13,7 @@ const dbName = process.env.DB_NAME;
 export default defineConfig({
   dialect: 'mysql', // 'mysql' | 'sqlite' | 'turso'
   schema: './src/db/schemas',
-  out: './drizzle',
+  out: './src/db/migrations',
   dbCredentials: databaseUrl
     ? { url: databaseUrl }
     : {

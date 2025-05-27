@@ -1,4 +1,4 @@
-import { todosTable } from '@app/db/schemas/todos';
+import { todoSchema } from '@app/db/schemas/todos';
 
-export type Todo = typeof todosTable.$inferSelect;
-export type NewTodo = typeof todosTable.$inferInsert;
+export type Todo = typeof todoSchema.$inferSelect;
+export type NewTodo = typeof todoSchema.$inferInsert;
