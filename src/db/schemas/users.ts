@@ -4,24 +4,23 @@ import {
   mysqlTable,
   primaryKey,
   unique,
-  serial,
+  int,
   varchar,
 } from 'drizzle-orm/mysql-core';
 
-export const usersTable = mysqlTable(
+export const userSchema = mysqlTable(
   'users',
   {
-    id: serial().notNull(),
+    id: int().autoincrement().primaryKey(),
     email: varchar({ length: 255 }).notNull(),
     password: varchar({ length: 255 }).notNull(),
     name: varchar({ length: 255 }).notNull(),
     authProvider: varchar('auth_provider', { length: 255 }).notNull(),
-    profileProvider: varchar('profile_picture', { length: 255 }).notNull(),
+    profilePicture: varchar('profile_picture', { length: 255 }),
     ...timestamps,
   },
   (table) => [
     primaryKey({ columns: [table.id], name: 'users_id' }),
-    unique('id').on(table.id),
     unique('users_email_unique').on(table.email),
   ],
 );

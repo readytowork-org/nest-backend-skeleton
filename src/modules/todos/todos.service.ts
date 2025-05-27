@@ -52,7 +52,7 @@ export class TodosService {
   }
 
   async remove(id: number, userId: number) {
-    this.logger.log(`Removing todo with id: ${id} for user: ${userId}`);
+    this.logger.log(`Soft deleting todo with id: ${id} for user: ${userId}`);
 
     // Check if todo exists and belongs to the user
     const exists = await this.todoRepository.exists(id, userId);
@@ -65,5 +65,21 @@ export class TodosService {
     }
 
     return this.todoRepository.remove(id, userId);
+  }
+
+  async hardDelete(id: number, userId: number) {
+    this.logger.log(`Hard deleting todo with id: ${id} for user: ${userId}`);
+
+    // Check if todo exists and belongs to the user (check both soft-deleted and non-deleted)
+    const todo = await this.todoRepository.findOne(id, userId);
+
+    if (!todo || todo.length === 0) {
+      this.logger.warn(
+        `Todo with id: ${id} not found or not owned by user: ${userId}`,
+      );
+      throw new NotFoundException(`Todo with ID ${id} not found`);
+    }
+
+    return this.todoRepository.hardDelete(id, userId);
   }
 }

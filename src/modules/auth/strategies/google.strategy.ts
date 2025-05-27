@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
@@ -79,7 +80,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       this.logger.debug('Creating or validating Google user...');
       const user =
         await this.authService.validateOrCreateGoogleUser(googleProfile);
-      this.logger.debug(`User validated: ${user.id}`);
 
       return done(null, user);
     } catch (error: unknown) {
