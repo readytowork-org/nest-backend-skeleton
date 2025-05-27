@@ -9,14 +9,15 @@ import { hash, compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { AuthRepositoryInterface } from './interface/auth.repo.interface';
 
-import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { UsersService } from '../users/users.service';
 import {
   AmazonUser,
   AuthenticatedUser,
   GoogleUser,
-  TokenPayload,
-  UserData,
+  RegisterInput,
+  LoginInput,
+  AuthUserData,
+  JwtPayload,
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 
@@ -30,8 +31,8 @@ export class AuthRepository implements AuthRepositoryInterface {
     this.logger.setContext(AuthRepository.name);
   }
 
-  async register(registerDto: RegisterDto): Promise<AuthenticatedUser> {
-    const { email, password, name } = registerDto;
+  async register(registerInput: RegisterInput): Promise<AuthenticatedUser> {
+    const { email, password, name } = registerInput;
 
     const existingUser = await this.userService.findUnique(email);
     if (existingUser) {
@@ -39,7 +40,7 @@ export class AuthRepository implements AuthRepositoryInterface {
     }
 
     const hashedPassword = await hash(password, 10);
-    const userData: UserData = {
+    const userData: AuthUserData = {
       email,
       password: hashedPassword,
       name: name || 'User',
@@ -52,8 +53,8 @@ export class AuthRepository implements AuthRepositoryInterface {
     return { ...user, token };
   }
 
-  async login(loginDto: LoginDto): Promise<AuthenticatedUser> {
-    const { email, password } = loginDto;
+  async login(loginInput: LoginInput): Promise<AuthenticatedUser> {
+    const { email, password } = loginInput;
 
     const user = await this.userService.findUnique(email);
     if (!user) {
@@ -93,7 +94,7 @@ export class AuthRepository implements AuthRepositoryInterface {
       return { ...existingUser, token };
     }
 
-    const userData: UserData = {
+    const userData: AuthUserData = {
       email,
       name,
       password: '',
@@ -123,7 +124,7 @@ export class AuthRepository implements AuthRepositoryInterface {
       return { ...existingUser, token };
     }
 
-    const userData: UserData = {
+    const userData: AuthUserData = {
       email,
       name: name || 'Amazon User',
       password: '',
@@ -142,7 +143,7 @@ export class AuthRepository implements AuthRepositoryInterface {
     name: string | null;
     profilePicture: string | null;
   }): string {
-    const payload: TokenPayload = {
+    const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,

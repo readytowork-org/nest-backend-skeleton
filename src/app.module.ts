@@ -6,7 +6,7 @@ import { LoggerModule } from '@app/config/logger/logger.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { HealthModule } from '@modules/healthz/healthz.module';
 import { UsersModule } from './modules/users/users.module';
-import { TodosModule } from './modules';
+// import { TodosModule } from './modulxes';
 import { DrizzleModule } from './db';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 
@@ -25,7 +25,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
     HealthModule,
     AuthModule,
     UsersModule,
-    TodosModule,
+    // TodosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

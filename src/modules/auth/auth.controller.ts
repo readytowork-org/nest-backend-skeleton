@@ -13,8 +13,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from './dto/auth.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { RegisterInput, LoginInput } from './types/auth.types';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
@@ -69,24 +69,22 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register new user' })
-  @ApiBody({ type: RegisterDto })
   @ApiResponse({ status: 201, description: 'User successfully registered' })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 409, description: 'Email already exists' })
-  async register(@Body() registerDto: RegisterDto): Promise<any> {
-    this.logger.debug(`Registration attempt for email: ${registerDto.email}`);
-    return this.authService.register(registerDto);
+  async register(@Body() registerInput: RegisterInput): Promise<any> {
+    this.logger.debug(`Registration attempt for email: ${registerInput.email}`);
+    return this.authService.register(registerInput);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with credentials' })
-  @ApiBody({ type: LoginDto })
   @ApiResponse({ status: 200, description: 'User successfully logged in' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto): Promise<any> {
-    this.logger.debug(`Login attempt for email: ${loginDto.email}`);
-    return this.authService.login(loginDto);
+  async login(@Body() loginInput: LoginInput): Promise<any> {
+    this.logger.debug(`Login attempt for email: ${loginInput.email}`);
+    return this.authService.login(loginInput);
   }
 
   @Get('google')

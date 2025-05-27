@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable } from '@nestjs/common';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { LoginInput, RegisterInput } from './types/auth.types';
 // import {
 //   AuthenticatedUser,
 //   GoogleUser,
@@ -14,12 +14,12 @@ import { AmazonUser, AuthenticatedUser, GoogleUser } from './types/auth.types';
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
 
-  async register(registerDto: RegisterDto): Promise<AuthenticatedUser> {
-    return this.authRepository.register(registerDto);
+  async register(registerInput: RegisterInput): Promise<AuthenticatedUser> {
+    return this.authRepository.register(registerInput);
   }
 
-  async login(loginDto: LoginDto): Promise<AuthenticatedUser> {
-    return this.authRepository.login(loginDto);
+  async login(loginInput: LoginInput): Promise<AuthenticatedUser> {
+    return this.authRepository.login(loginInput);
   }
 
   async validateOrCreateGoogleUser(

@@ -1,26 +1,25 @@
-export interface TokenPayload {
-  sub: number;
-  email: string;
-  name: string | null;
-  picture: string | null;
-}
+import { User, AuthProvider } from '@app/modules/users/types/user.types';
 
-export interface UserData {
+// Auth input types (replacing DTOs)
+export type RegisterInput = {
+  email: string;
+  name: string;
+  password: string;
+};
+
+export type LoginInput = {
   email: string;
   password: string;
-  name: string;
-  authProvider: 'local' | 'google' | 'amazon';
-  profilePicture: string | null;
-}
+};
 
-import { User } from '@app/modules/users/types/user.types';
-
+// Auth response types
 export type AuthenticatedUser = Pick<User, 'id' | 'email'> & {
   name: string | null;
   token: string;
   picture?: string | null;
 };
 
+// OAuth provider types
 export interface GoogleUser {
   email: string;
   firstName: string;
@@ -37,6 +36,7 @@ export interface AmazonUser {
   accessToken: string;
 }
 
+// JWT types
 export interface JwtPayload {
   sub: number;
   email: string;
@@ -50,4 +50,11 @@ export interface AuthUser {
   name?: string;
 }
 
-export type AuthProvider = 'local' | 'google' | 'amazon';
+// User creation type for auth context
+export type AuthUserData = {
+  email: string;
+  password: string;
+  name: string;
+  authProvider: AuthProvider;
+  profilePicture: string | null;
+};

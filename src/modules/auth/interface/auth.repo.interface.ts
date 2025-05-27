@@ -1,10 +1,15 @@
-import { AuthenticatedUser, GoogleUser, AmazonUser } from '../types/auth.types';
-import { RegisterDto, LoginDto } from '../dto/auth.dto';
+import {
+  AuthenticatedUser,
+  GoogleUser,
+  AmazonUser,
+  RegisterInput,
+  LoginInput,
+} from '../types/auth.types';
 
 // Core repository interface
 export interface AuthRepositoryInterface {
-  register(registerDto: RegisterDto): Promise<AuthenticatedUser>;
-  login(loginDto: LoginDto): Promise<AuthenticatedUser>;
+  register(registerInput: RegisterInput): Promise<AuthenticatedUser>;
+  login(loginInput: LoginInput): Promise<AuthenticatedUser>;
   validateOrCreateGoogleUser(
     googleUser: GoogleUser,
   ): Promise<AuthenticatedUser>;
