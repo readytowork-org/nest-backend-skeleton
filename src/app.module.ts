@@ -18,6 +18,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
     }),
     DevtoolsModule.register({
       http: process.env.NODE_ENV !== 'production',
+      port: parseInt(process.env.DEVTOOLS_PORT || '8002', 10),
     }),
     DrizzleModule,
     LoggerModule,

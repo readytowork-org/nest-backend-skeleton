@@ -47,17 +47,23 @@ export class AuthController {
 
   @Get('/test')
   test() {
+    // 🔴 Set a breakpoint on this line to test debugging
     this.logger.debug('Debug endpoint called - testing logger functionality');
-    this.logger.log('Test log message');
-    this.logger.warn('Test warning message');
-    this.logger.error('Test error message');
 
-    return {
+    const debugInfo = {
       message: 'Debug endpoint working',
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       port: process.env.PORT || '9001',
+      requestCount: Math.floor(Math.random() * 100),
     };
+
+    // 🔴 Set another breakpoint here to inspect debugInfo
+    this.logger.log('Test log message');
+    this.logger.warn('Test warning message');
+    this.logger.error('Test error message');
+
+    return debugInfo;
   }
 
   @Post('register')
