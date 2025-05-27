@@ -360,10 +360,10 @@ Execute your tests to ensure everything works correctly:
 
 ```bash
 # Run unit tests
-pnpm test
+yarn test
 
 # Run e2e tests
-pnpm test:e2e
+yarn test:e2e
 ```
 
 ## 4. Documentation
@@ -394,9 +394,9 @@ Update or create markdown files in the `docs` directory:
 
 Before submitting your code for review:
 
-- Run linting: `pnpm lint`
-- Run tests: `pnpm test`
-- Check test coverage: `pnpm test:cov`
+- Run linting: `yarn lint`
+- Run tests: `yarn test`
+- Check test coverage: `yarn test:cov`
 - Make sure all API endpoints are documented
 - Ensure code follows project standards
 

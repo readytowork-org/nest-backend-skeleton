@@ -24,10 +24,10 @@ To get started with development:
 
 1. Clone the repository
 2. Copy `.env.example` to `.env` and configure your environment variables
-3. Install dependencies: `pnpm install`
-4. Generate Prisma client: `pnpm prisma:generate`
-5. Run database migrations: `pnpm prisma:migrate:dev`
-6. Start the development server: `pnpm start:dev`
+3. Install dependencies: `yarn install`
+4. Generate Prisma client: `yarn prisma:generate`
+5. Run database migrations: `yarn prisma:migrate:dev`
+6. Start the development server: `yarn start:dev`
 
 The API documentation is available at `http://localhost:3000/api` when the server is running.
 
@@ -43,7 +43,7 @@ Follow these guides for developing features and maintaining the codebase:
 
 The API is documented using Swagger/OpenAPI. To access the documentation:
 
-1. Start the server: `pnpm start:dev`
+1. Start the server: `yarn start:dev`
 2. Navigate to: `http://localhost:3000/api`
 
 ## Additional Resources

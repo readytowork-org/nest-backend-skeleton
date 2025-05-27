@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto, UpdateTodoDto } from './dto/todo.dto';
-import { TodoRepository } from './repositories/todo.repository';
+import { TodoRepository } from './todo.repository';
 import { AppLogger } from '@common/logger/app-logger.service';
 
 @Injectable()

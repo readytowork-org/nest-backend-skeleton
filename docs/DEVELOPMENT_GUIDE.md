@@ -56,7 +56,7 @@ src/
 1. Clone the repository
 2. Install dependencies:
    ```bash
-   pnpm install
+   yarn install
    ```
 3. Set up environment variables:
    ```bash
@@ -64,15 +64,15 @@ src/
    ```
 4. Generate Prisma client:
    ```bash
-   pnpm prisma:generate
+   yarn prisma:generate
    ```
 5. Run database migrations:
    ```bash
-   pnpm prisma:migrate:dev
+   yarn prisma:migrate:dev
    ```
 6. Start the development server:
    ```bash
-   pnpm start:dev
+   yarn start:dev
    ```
 
 ### Development Process
@@ -90,13 +90,13 @@ src/
 4. **Run linting** to ensure code quality:
 
    ```bash
-   pnpm lint
+   yarn lint
    ```
 
 5. **Run tests** to ensure functionality:
 
    ```bash
-   pnpm test
+   yarn test
    ```
 
 6. **Submit a pull request** for code review
@@ -232,16 +232,16 @@ Follow these naming conventions for test files:
 
 ```bash
 # Run all tests
-pnpm test
+yarn test
 
 # Run tests in watch mode
-pnpm test:watch
+yarn test:watch
 
 # Run tests with coverage
-pnpm test:cov
+yarn test:cov
 
 # Run e2e tests
-pnpm test:e2e
+yarn test:e2e
 ```
 
 ## Documentation
@@ -250,7 +250,7 @@ pnpm test:e2e
 
 The API is documented using Swagger/OpenAPI. To access the documentation:
 
-1. Start the server: `pnpm start:dev`
+1. Start the server: `yarn start:dev`
 2. Navigate to: `http://localhost:3000/api`
 
 ### Code Documentation
