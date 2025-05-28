@@ -86,9 +86,22 @@ export class AuthRepository implements AuthRepositoryInterface {
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
 
+    // Create safe user object (without password)
+    const safeUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      authProvider: user.authProvider,
+      profilePicture: user.profilePicture,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
     return {
       accessToken,
       refreshToken,
+      user: safeUser,
     };
   }
 

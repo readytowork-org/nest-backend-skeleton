@@ -1,5 +1,5 @@
 import { UserRole } from '@app/modules/users/types/user.role.enum';
-import { User } from '@app/modules/users/types/user.types';
+import { User, SafeUser } from '@app/modules/users/types/user.types';
 
 export interface TokenPayload {
   sub: number; // user id
@@ -43,6 +43,7 @@ export type AuthenticatedUser = Pick<User, 'id' | 'email'> & {
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
+  user: SafeUser;
 }
 
 export interface RegisterResponse {

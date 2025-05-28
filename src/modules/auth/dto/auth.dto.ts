@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole } from '@app/modules/users/types/user.role.enum';
+import { SafeUser } from '@app/modules/users/types/user.types';
 
 export class RegisterDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -70,6 +71,20 @@ export class LoginResponseDto {
     description: 'JWT refresh token',
   })
   refreshToken: string;
+
+  @ApiProperty({
+    description: 'User information',
+    example: {
+      id: 1,
+      email: 'user@example.com',
+      name: 'John Doe',
+      authProvider: 'local',
+      profilePicture: null,
+      createdAt: '2024-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+  })
+  user: SafeUser;
 }
 
 export class RefreshTokenDto {

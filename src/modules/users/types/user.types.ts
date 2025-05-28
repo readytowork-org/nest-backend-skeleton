@@ -1,4 +1,5 @@
 import { userSchema } from '@app/db/schemas/users';
+import { UserRole } from './user.role.enum';
 
 export type User = typeof userSchema.$inferSelect;
 export type NewUser = typeof userSchema.$inferInsert;
@@ -23,6 +24,7 @@ export interface SafeUser {
   name: string;
   authProvider: string;
   profilePicture: string | null;
+  role: UserRole;
   createdAt: Date;
   updatedAt: Date | null;
 }

@@ -81,6 +81,16 @@ export class AuthController {
       example: {
         accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
         refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        user: {
+          id: 1,
+          email: 'user@example.com',
+          name: 'John Doe',
+          authProvider: 'local',
+          profilePicture: null,
+          role: 'USER',
+          createdAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: null,
+        },
       },
     },
   })
