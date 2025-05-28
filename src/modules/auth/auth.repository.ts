@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
@@ -10,7 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthRepositoryInterface } from './interface/auth.repo.interface';
 
-import { RegisterDto, LoginDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, RefreshTokenDto } from './dto/auth.dto';
 import { UsersService } from '../users/users.service';
 import {
   AmazonUser,
@@ -21,6 +22,7 @@ import {
   LoginResponse,
   RegisterResponse,
   RefreshTokenPayload,
+  RefreshTokenResponse,
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UserRole } from '../users/types/user.role.enum';
@@ -191,5 +193,49 @@ export class AuthRepository implements AuthRepositoryInterface {
     return this.jwtService.sign(payload, {
       expiresIn: refreshExpiresIn,
     });
+  }
+
+  async refreshToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponse> {
+    const { refreshToken } = refreshTokenDto;
+
+    try {
+      // Verify the refresh token
+      const decoded = this.jwtService.verify(
+        refreshToken,
+      ) as RefreshTokenPayload;
+
+      // Check if it's actually a refresh token
+      if (decoded.tokenType !== 'refresh') {
+        throw new UnauthorizedException('Invalid token type');
+      }
+
+      // Get user from database to ensure they still exist and get latest data
+      const user = await this.userService.findUnique(decoded.email);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      // Generate new tokens
+      const newAccessToken = this.generateAccessToken(user);
+      const newRefreshToken = this.generateRefreshToken(user);
+
+      this.logger.debug(`Tokens refreshed for user: ${user.email}`);
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
+      this.logger.error(
+        `Refresh token validation failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { LoginDto, RefreshTokenDto, RegisterDto } from './dto/auth.dto';
 // import {
 //   AuthenticatedUser,
 //   GoogleUser,
@@ -11,6 +11,7 @@ import {
   AuthenticatedUser,
   GoogleUser,
   LoginResponse,
+  RefreshTokenResponse,
   RegisterResponse,
 } from './types/auth.types';
 
@@ -26,6 +27,11 @@ export class AuthService {
     return this.authRepository.login(loginDto);
   }
 
+  async refreshToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponse> {
+    return this.authRepository.refreshToken(refreshTokenDto);
+  }
   async validateOrCreateGoogleUser(
     googleUser: GoogleUser,
   ): Promise<AuthenticatedUser> {

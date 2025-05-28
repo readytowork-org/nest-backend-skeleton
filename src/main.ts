@@ -53,13 +53,28 @@ async function bootstrap() {
       .setDescription('The bare skeleton API description')
       .setVersion('1.0')
       .addTag('Healthz', 'Get the status of the server')
-      .addBearerAuth()
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'Authorization',
+          description: 'Enter your JWT access token',
+          in: 'header',
+        },
+        'BearerAuth', // This is the security scheme name
+      )
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document, {
       swaggerOptions: {
         persistAuthorization: true,
+        displayRequestDuration: true,
+        docExpansion: 'none',
+        filter: true,
+        showRequestHeaders: true,
+        tryItOutEnabled: true,
       },
     });
   }

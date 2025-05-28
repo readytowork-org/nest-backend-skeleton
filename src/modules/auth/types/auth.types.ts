@@ -11,6 +11,10 @@ export interface TokenPayload {
   iat?: number; // issued at
   exp?: number; // expires at
 }
+export interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export interface RefreshTokenPayload {
   sub: number; // user id

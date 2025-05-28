@@ -18,6 +18,8 @@ import {
   LoginDto,
   RegisterResponseDto,
   LoginResponseDto,
+  RefreshTokenResponseDto,
+  RefreshTokenDto,
 } from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AppLogger } from '@app/config/logger/app-logger.service';
@@ -26,6 +28,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from './guards/roles.guard';
 import { AmazonUser, GoogleUser } from './types/auth.types';
+// import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -225,5 +228,32 @@ export class AuthController {
         `${frontendUrl}/login?auth_error=true&provider=amazon`,
       );
     }
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Refresh access token',
+    description:
+      'Get new access and refresh tokens using a valid refresh token',
+  })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens refreshed successfully',
+    type: RefreshTokenResponseDto,
+    schema: {
+      example: {
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponseDto> {
+    this.logger.debug('Token refresh attempt');
+    return this.authService.refreshToken(refreshTokenDto);
   }
 }

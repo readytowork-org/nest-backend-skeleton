@@ -71,3 +71,27 @@ export class LoginResponseDto {
   })
   refreshToken: string;
 }
+
+export class RefreshTokenDto {
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'Refresh token received from login',
+  })
+  @IsString({ message: 'Refresh token must be a string' })
+  @IsNotEmpty({ message: 'Refresh token is required' })
+  refreshToken: string;
+}
+
+export class RefreshTokenResponseDto {
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'New JWT access token',
+  })
+  accessToken: string;
+
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'New JWT refresh token',
+  })
+  refreshToken: string;
+}
