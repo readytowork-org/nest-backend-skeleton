@@ -68,7 +68,6 @@ export class SeedingService {
 
   async runAllSeeds(): Promise<void> {
     this.logger.log('🌱 Starting database seeding...');
-
     try {
       await this.seedAdmin();
       this.logger.log('✅ Database seeding completed successfully');

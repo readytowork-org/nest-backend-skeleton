@@ -19,8 +19,8 @@ export const userSchema = mysqlTable(
     name: varchar({ length: 255 }).notNull(),
     authProvider: varchar('auth_provider', { length: 255 }).notNull(),
     profilePicture: varchar('profile_picture', { length: 255 }),
-    ...timestamps,
     role: mysqlEnum('role', USER_ROLES).notNull().default(UserRole.USER),
+     ...timestamps,
   },
   (table) => [
     primaryKey({ columns: [table.id], name: 'users_id' }),

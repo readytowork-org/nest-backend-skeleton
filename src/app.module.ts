@@ -6,7 +6,6 @@ import { LoggerModule } from '@app/config/logger/logger.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { HealthModule } from '@modules/healthz/healthz.module';
 import { UsersModule } from './modules/users/users.module';
-import { TodosModule } from './modules';
 import { DrizzleModule } from './db';
 import { SeedingModule } from './modules/seed/seed.module';
 
@@ -21,7 +20,6 @@ import { SeedingModule } from './modules/seed/seed.module';
     HealthModule,
     AuthModule,
     UsersModule,
-    TodosModule,
     SeedingModule,
   ],
   controllers: [AppController],
