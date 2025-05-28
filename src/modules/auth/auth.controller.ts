@@ -13,7 +13,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from './dto/auth.dto';
+import {
+  RegisterDto,
+  LoginDto,
+  RegisterResponseDto,
+  LoginResponseDto,
+} from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { ConfigService } from '@nestjs/config';
@@ -33,13 +38,31 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register new user' })
+  @ApiOperation({
+    summary: 'Register new user',
+    description:
+      'Register a new user with optional role. Defaults to USER role if not specified.',
+  })
   @ApiBody({ type: RegisterDto })
-  @ApiResponse({ status: 201, description: 'User successfully registered' })
+  @ApiResponse({
+    status: 201,
+    description: 'User successfully registered',
+    type: RegisterResponseDto,
+    schema: {
+      example: {
+        message: 'User registered successfully',
+        statusCode: 201,
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 409, description: 'Email already exists' })
-  async register(@Body() registerDto: RegisterDto): Promise<any> {
-    this.logger.debug(`Registration attempt for email: ${registerDto.email}`);
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<RegisterResponseDto> {
+    this.logger.debug(
+      `Registration attempt for email: ${registerDto.email} with role: ${registerDto.role || 'USER'}`,
+    );
     return this.authService.register(registerDto);
   }
 
@@ -47,9 +70,19 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with credentials' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 200, description: 'User successfully logged in' })
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully logged in',
+    type: LoginResponseDto,
+    schema: {
+      example: {
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+      },
+    },
+  })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto): Promise<any> {
+  async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
     this.logger.debug(`Login attempt for email: ${loginDto.email}`);
     return this.authService.login(loginDto);
   }

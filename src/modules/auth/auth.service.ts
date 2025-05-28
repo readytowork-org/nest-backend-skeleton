@@ -6,17 +6,23 @@ import { LoginDto, RegisterDto } from './dto/auth.dto';
 //   AmazonUser,
 // } from './interfaces/auth.interface';
 import { AuthRepository } from './auth.repository';
-import { AmazonUser, AuthenticatedUser, GoogleUser } from './types/auth.types';
+import {
+  AmazonUser,
+  AuthenticatedUser,
+  GoogleUser,
+  LoginResponse,
+  RegisterResponse,
+} from './types/auth.types';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
 
-  async register(registerDto: RegisterDto): Promise<AuthenticatedUser> {
+  async register(registerDto: RegisterDto): Promise<RegisterResponse> {
     return this.authRepository.register(registerDto);
   }
 
-  async login(loginDto: LoginDto): Promise<AuthenticatedUser> {
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     return this.authRepository.login(loginDto);
   }
 

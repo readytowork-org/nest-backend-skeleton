@@ -1,5 +1,13 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsEnum,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsNotEmpty,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { UserRole } from '@app/modules/users/types/user.role.enum';
 
 export class RegisterDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -17,6 +25,16 @@ export class RegisterDto {
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
+
+  @ApiPropertyOptional({
+    example: UserRole.USER,
+    enum: UserRole,
+    description: 'User role - defaults to USER if not provided',
+    default: UserRole.USER,
+  })
+  @IsOptional()
+  @IsEnum(UserRole, { message: 'Role must be a valid UserRole' })
+  role?: UserRole;
 }
 
 export class LoginDto {
@@ -29,4 +47,27 @@ export class LoginDto {
   @IsString({ message: 'Password must be a string' })
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
+}
+
+// Response DTOs
+export class RegisterResponseDto {
+  @ApiProperty({ example: 'User registered successfully' })
+  message: string;
+
+  @ApiProperty({ example: 201 })
+  statusCode: number;
+}
+
+export class LoginResponseDto {
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'JWT access token',
+  })
+  accessToken: string;
+
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'JWT refresh token',
+  })
+  refreshToken: string;
 }

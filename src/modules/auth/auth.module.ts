@@ -22,7 +22,7 @@ import { RolesGuard } from './guards/roles.guard';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '7d',
+          expiresIn: configService.get<string>('JWT_ACCESS_EXPIRES_IN') || '1h',
         },
       }),
     }),
@@ -37,6 +37,6 @@ import { RolesGuard } from './guards/roles.guard';
     // AuthRolesGuard,
   ],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService, RolesGuard],
 })
 export class AuthModule {}

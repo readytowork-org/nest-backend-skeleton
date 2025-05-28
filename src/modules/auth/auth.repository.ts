@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { hash, compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { AuthRepositoryInterface } from './interface/auth.repo.interface';
 
 import { RegisterDto, LoginDto } from './dto/auth.dto';
@@ -17,6 +18,9 @@ import {
   GoogleUser,
   TokenPayload,
   UserData,
+  LoginResponse,
+  RegisterResponse,
+  RefreshTokenPayload,
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UserRole } from '../users/types/user.role.enum';
@@ -26,13 +30,14 @@ export class AuthRepository implements AuthRepositoryInterface {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(AuthRepository.name);
   }
 
-  async register(registerDto: RegisterDto): Promise<AuthenticatedUser> {
-    const { email, password, name } = registerDto;
+  async register(registerDto: RegisterDto): Promise<RegisterResponse> {
+    const { email, password, name, role } = registerDto;
 
     const existingUser = await this.userService.findUnique(email);
     if (existingUser) {
@@ -46,14 +51,18 @@ export class AuthRepository implements AuthRepositoryInterface {
       name: name || 'User',
       authProvider: 'local',
       profilePicture: null,
+      role: role || UserRole.USER,
     };
 
-    const user = await this.userService.create(userData);
-    const token = this.generateToken(user);
-    return { ...user, token };
+    await this.userService.create(userData);
+
+    return {
+      message: 'User registered successfully',
+      statusCode: 201,
+    };
   }
 
-  async login(loginDto: LoginDto): Promise<AuthenticatedUser> {
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     const { email, password } = loginDto;
 
     const user = await this.userService.findUnique(email);
@@ -72,8 +81,13 @@ export class AuthRepository implements AuthRepositoryInterface {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.generateToken(user);
-    return { ...user, token };
+    const accessToken = this.generateAccessToken(user);
+    const refreshToken = this.generateRefreshToken(user);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   async validateOrCreateGoogleUser(
@@ -90,7 +104,7 @@ export class AuthRepository implements AuthRepositoryInterface {
           profilePicture: picture || null,
         });
       }
-      const token = this.generateToken(existingUser);
+      const token = this.generateAccessToken(existingUser);
       return { ...existingUser, token };
     }
 
@@ -100,10 +114,11 @@ export class AuthRepository implements AuthRepositoryInterface {
       password: '',
       authProvider: 'google',
       profilePicture: picture || null,
+      role: UserRole.USER,
     };
 
     const newUser = await this.userService.create(userData);
-    const token = this.generateToken(newUser);
+    const token = this.generateAccessToken(newUser);
     return { ...newUser, token };
   }
 
@@ -120,7 +135,7 @@ export class AuthRepository implements AuthRepositoryInterface {
           profilePicture: picture || null,
         });
       }
-      const token = this.generateToken(existingUser);
+      const token = this.generateAccessToken(existingUser);
       return { ...existingUser, token };
     }
 
@@ -128,19 +143,21 @@ export class AuthRepository implements AuthRepositoryInterface {
       email,
       name: name || 'Amazon User',
       password: '',
+      role: UserRole.USER,
       authProvider: 'amazon',
       profilePicture: picture || null,
     };
 
     const newUser = await this.userService.create(userData);
-    const token = this.generateToken(newUser);
+    const token = this.generateAccessToken(newUser);
     return { ...newUser, token };
   }
 
-  private generateToken(user: {
+  private generateAccessToken(user: {
     id: number;
     email: string;
-    name: string | null;
+    name: string;
+    authProvider: string;
     profilePicture: string | null;
     role: UserRole;
   }): string {
@@ -148,10 +165,31 @@ export class AuthRepository implements AuthRepositoryInterface {
       sub: user.id,
       email: user.email,
       name: user.name,
-      picture: user.profilePicture,
+      authProvider: user.authProvider,
+      profilePicture: user.profilePicture,
       role: user.role,
     };
 
-    return this.jwtService.sign(payload);
+    const accessExpiresIn =
+      this.configService.get<string>('JWT_ACCESS_EXPIRES_IN') || '1h';
+
+    return this.jwtService.sign(payload, {
+      expiresIn: accessExpiresIn,
+    });
+  }
+
+  private generateRefreshToken(user: { id: number; email: string }): string {
+    const payload: RefreshTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      tokenType: 'refresh',
+    };
+
+    const refreshExpiresIn =
+      this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '30d';
+
+    return this.jwtService.sign(payload, {
+      expiresIn: refreshExpiresIn,
+    });
   }
 }

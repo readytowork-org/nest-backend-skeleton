@@ -3,6 +3,7 @@ import { DrizzleService } from '@app/db';
 import { userSchema } from '@app/db/schemas/users';
 import { eq } from 'drizzle-orm';
 import { User, NewUser } from './types/user.types';
+import { UserRole } from './types/user.role.enum';
 
 @Injectable()
 export class UsersService {
@@ -49,6 +50,7 @@ export class UsersService {
   ): Promise<User> {
     const result = await this.drizzle.db.insert(userSchema).values({
       ...userData,
+      role: userData.role || UserRole.USER,
       createdAt: new Date(),
     });
 

@@ -43,26 +43,43 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       this.logger.debug(`Validating JWT payload for user: ${payload.email}`);
 
-      const userResult = await this.userService.findUnique(payload.email);
+      // For refresh tokens, we need to fetch user from database
+      // For access tokens, we can use the payload data directly if it's complete
+      if (!payload.name || !payload.authProvider || !payload.role) {
+        // Incomplete payload, fetch from database
+        const userResult = await this.userService.findUnique(payload.email);
 
-      if (!userResult) {
-        this.logger.warn(
-          `JWT validation failed - user not found for email: ${payload.email} (ID: ${payload.sub})`,
+        if (!userResult) {
+          this.logger.warn(
+            `JWT validation failed - user not found for email: ${payload.email} (ID: ${payload.sub})`,
+          );
+          throw new UnauthorizedException('Invalid token - user not found');
+        }
+
+        const user = userResult as ValidatedUser;
+
+        this.logger.debug(
+          `JWT validated successfully for user: ${user.id} (${user.email}) with role: ${user.role}`,
         );
-        throw new UnauthorizedException('Invalid token - user not found');
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
       }
 
-      const user = userResult as ValidatedUser;
-
+      // Complete payload from access token
       this.logger.debug(
-        `JWT validated successfully for user: ${user.id} (${user.email}) with role: ${user.role}`,
+        `JWT validated successfully for user: ${payload.sub} (${payload.email}) with role: ${payload.role}`,
       );
 
       return {
-        id: user.id,
-        email: user.email,
-        name: user.name || undefined,
-        role: user.role || UserRole.USER,
+        id: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        role: payload.role,
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

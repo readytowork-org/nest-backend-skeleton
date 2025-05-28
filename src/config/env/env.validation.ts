@@ -3,6 +3,7 @@ import {
   IsString,
   IsNotEmpty,
   validateSync,
+  IsOptional,
   // IsOptional,
 } from 'class-validator';
 
@@ -10,6 +11,14 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   JWT_SECRET: string;
+
+  @IsString()
+  @IsOptional()
+  JWT_ACCESS_EXPIRES_IN: string;
+
+  @IsString()
+  @IsOptional()
+  JWT_REFRESH_EXPIRES_IN: string;
 
   @IsString()
   @IsNotEmpty()
