@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AppLogger } from '@app/config/logger/app-logger.service';
+import { SeedingService } from './modules/seed/seed.service';
 
 async function bootstrap() {
   const bootstrapLogger = AppLogger.forRoot('NestJS-App');
@@ -10,6 +11,18 @@ async function bootstrap() {
     logger: bootstrapLogger,
   });
   const logger = app.get(AppLogger);
+
+  // seeding the database
+  try {
+    const seedingService = app.get(SeedingService);
+    await seedingService.runAllSeeds();
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error('Failed to run database seeding:', error.message);
+    } else {
+      logger.error('Failed to run database seeding:', error as string);
+    }
+  }
 
   // Enable CORS
   app.enableCors();
@@ -40,13 +53,28 @@ async function bootstrap() {
       .setDescription('The bare skeleton API description')
       .setVersion('1.0')
       .addTag('Healthz', 'Get the status of the server')
-      .addBearerAuth()
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'Authorization',
+          description: 'Enter your JWT access token',
+          in: 'header',
+        },
+        'BearerAuth', // This is the security scheme name
+      )
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document, {
       swaggerOptions: {
         persistAuthorization: true,
+        displayRequestDuration: true,
+        docExpansion: 'none',
+        filter: true,
+        showRequestHeaders: true,
+        tryItOutEnabled: true,
       },
     });
   }

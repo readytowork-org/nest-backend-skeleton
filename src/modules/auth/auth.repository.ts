@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
@@ -7,9 +8,10 @@ import {
 } from '@nestjs/common';
 import { hash, compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { AuthRepositoryInterface } from './interface/auth.repo.interface';
 
-import { RegisterDto, LoginDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, RefreshTokenDto } from './dto/auth.dto';
 import { UsersService } from '../users/users.service';
 import {
   AmazonUser,
@@ -17,21 +19,27 @@ import {
   GoogleUser,
   TokenPayload,
   UserData,
+  LoginResponse,
+  RegisterResponse,
+  RefreshTokenPayload,
+  RefreshTokenResponse,
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
+import { UserRole } from '../users/types/user.role.enum';
 
 @Injectable()
 export class AuthRepository implements AuthRepositoryInterface {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
     private readonly logger: AppLogger,
   ) {
     this.logger.setContext(AuthRepository.name);
   }
 
-  async register(registerDto: RegisterDto): Promise<AuthenticatedUser> {
-    const { email, password, name } = registerDto;
+  async register(registerDto: RegisterDto): Promise<RegisterResponse> {
+    const { email, password, name, role } = registerDto;
 
     const existingUser = await this.userService.findUnique(email);
     if (existingUser) {
@@ -45,14 +53,18 @@ export class AuthRepository implements AuthRepositoryInterface {
       name: name || 'User',
       authProvider: 'local',
       profilePicture: null,
+      role: role || UserRole.USER,
     };
 
-    const user = await this.userService.create(userData);
-    const token = this.generateToken(user);
-    return { ...user, token };
+    await this.userService.create(userData);
+
+    return {
+      message: 'User registered successfully',
+      statusCode: 201,
+    };
   }
 
-  async login(loginDto: LoginDto): Promise<AuthenticatedUser> {
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     const { email, password } = loginDto;
 
     const user = await this.userService.findUnique(email);
@@ -71,8 +83,26 @@ export class AuthRepository implements AuthRepositoryInterface {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const token = this.generateToken(user);
-    return { ...user, token };
+    const accessToken = this.generateAccessToken(user);
+    const refreshToken = this.generateRefreshToken(user);
+
+    // Create safe user object (without password)
+    const safeUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      authProvider: user.authProvider,
+      profilePicture: user.profilePicture,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    return {
+      accessToken,
+      refreshToken,
+      user: safeUser,
+    };
   }
 
   async validateOrCreateGoogleUser(
@@ -85,11 +115,12 @@ export class AuthRepository implements AuthRepositoryInterface {
     if (existingUser) {
       if (existingUser.authProvider !== 'google') {
         await this.userService.update(existingUser.id, {
+          ...existingUser,
           authProvider: 'google',
           profilePicture: picture || null,
         });
       }
-      const token = this.generateToken(existingUser);
+      const token = this.generateAccessToken(existingUser);
       return { ...existingUser, token };
     }
 
@@ -99,10 +130,11 @@ export class AuthRepository implements AuthRepositoryInterface {
       password: '',
       authProvider: 'google',
       profilePicture: picture || null,
+      role: UserRole.USER,
     };
 
     const newUser = await this.userService.create(userData);
-    const token = this.generateToken(newUser);
+    const token = this.generateAccessToken(newUser);
     return { ...newUser, token };
   }
 
@@ -115,11 +147,12 @@ export class AuthRepository implements AuthRepositoryInterface {
     if (existingUser) {
       if (existingUser.authProvider !== 'amazon') {
         await this.userService.update(existingUser.id, {
+          ...existingUser,
           authProvider: 'amazon',
           profilePicture: picture || null,
         });
       }
-      const token = this.generateToken(existingUser);
+      const token = this.generateAccessToken(existingUser);
       return { ...existingUser, token };
     }
 
@@ -127,28 +160,97 @@ export class AuthRepository implements AuthRepositoryInterface {
       email,
       name: name || 'Amazon User',
       password: '',
+      role: UserRole.USER,
       authProvider: 'amazon',
       profilePicture: picture || null,
     };
 
     const newUser = await this.userService.create(userData);
-    const token = this.generateToken(newUser);
+    const token = this.generateAccessToken(newUser);
     return { ...newUser, token };
   }
 
-  private generateToken(user: {
+  private generateAccessToken(user: {
     id: number;
     email: string;
-    name: string | null;
+    name: string;
+    authProvider: string;
     profilePicture: string | null;
+    role: UserRole;
   }): string {
     const payload: TokenPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
-      picture: user.profilePicture,
+      authProvider: user.authProvider,
+      profilePicture: user.profilePicture,
+      role: user.role,
     };
 
-    return this.jwtService.sign(payload);
+    const accessExpiresIn =
+      this.configService.get<string>('JWT_ACCESS_EXPIRES_IN') || '1h';
+
+    return this.jwtService.sign(payload, {
+      expiresIn: accessExpiresIn,
+    });
+  }
+
+  private generateRefreshToken(user: { id: number; email: string }): string {
+    const payload: RefreshTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      tokenType: 'refresh',
+    };
+
+    const refreshExpiresIn =
+      this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '30d';
+
+    return this.jwtService.sign(payload, {
+      expiresIn: refreshExpiresIn,
+    });
+  }
+
+  async refreshToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponse> {
+    const { refreshToken } = refreshTokenDto;
+
+    try {
+      // Verify the refresh token
+      const decoded = this.jwtService.verify(
+        refreshToken,
+      ) as RefreshTokenPayload;
+
+      // Check if it's actually a refresh token
+      if (decoded.tokenType !== 'refresh') {
+        throw new UnauthorizedException('Invalid token type');
+      }
+
+      // Get user from database to ensure they still exist and get latest data
+      const user = await this.userService.findUnique(decoded.email);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      // Generate new tokens
+      const newAccessToken = this.generateAccessToken(user);
+      const newRefreshToken = this.generateRefreshToken(user);
+
+      this.logger.debug(`Tokens refreshed for user: ${user.email}`);
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
+      this.logger.error(
+        `Refresh token validation failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
   }
 }

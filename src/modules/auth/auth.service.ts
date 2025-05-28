@@ -1,27 +1,37 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable } from '@nestjs/common';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { LoginDto, RefreshTokenDto, RegisterDto } from './dto/auth.dto';
 // import {
 //   AuthenticatedUser,
 //   GoogleUser,
 //   AmazonUser,
 // } from './interfaces/auth.interface';
 import { AuthRepository } from './auth.repository';
-import { AmazonUser, AuthenticatedUser, GoogleUser } from './types/auth.types';
+import {
+  AmazonUser,
+  AuthenticatedUser,
+  GoogleUser,
+  LoginResponse,
+  RefreshTokenResponse,
+  RegisterResponse,
+} from './types/auth.types';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly authRepository: AuthRepository) {}
 
-  async register(registerDto: RegisterDto): Promise<AuthenticatedUser> {
+  async register(registerDto: RegisterDto): Promise<RegisterResponse> {
     return this.authRepository.register(registerDto);
   }
 
-  async login(loginDto: LoginDto): Promise<AuthenticatedUser> {
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
     return this.authRepository.login(loginDto);
   }
 
+  async refreshToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponse> {
+    return this.authRepository.refreshToken(refreshTokenDto);
+  }
   async validateOrCreateGoogleUser(
     googleUser: GoogleUser,
   ): Promise<AuthenticatedUser> {

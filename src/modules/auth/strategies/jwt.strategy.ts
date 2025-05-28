@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UsersService } from '@app/modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -7,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthUser, JwtPayload } from '../types/auth.types';
+import { UserRole } from '@app/modules/users/types/user.role.enum';
 
 interface ValidatedUser {
   id: number;
@@ -14,6 +13,7 @@ interface ValidatedUser {
   name: string;
   authProvider: string;
   profilePicture: string | null;
+  role: UserRole;
 }
 
 @Injectable()
@@ -43,27 +43,43 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       this.logger.debug(`Validating JWT payload for user: ${payload.email}`);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const userResult = await this.userService.findUnique(payload.email);
+      // For refresh tokens, we need to fetch user from database
+      // For access tokens, we can use the payload data directly if it's complete
+      if (!payload.name || !payload.authProvider || !payload.role) {
+        // Incomplete payload, fetch from database
+        const userResult = await this.userService.findUnique(payload.email);
 
-      if (!userResult) {
-        this.logger.warn(
-          `JWT validation failed - user not found for email: ${payload.email} (ID: ${payload.sub})`,
+        if (!userResult) {
+          this.logger.warn(
+            `JWT validation failed - user not found for email: ${payload.email} (ID: ${payload.sub})`,
+          );
+          throw new UnauthorizedException('Invalid token - user not found');
+        }
+
+        const user = userResult as ValidatedUser;
+
+        this.logger.debug(
+          `JWT validated successfully for user: ${user.id} (${user.email}) with role: ${user.role}`,
         );
-        throw new UnauthorizedException('Invalid token - user not found');
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
       }
 
-      // Type assertion to our known interface
-      const user = userResult as ValidatedUser;
-
+      // Complete payload from access token
       this.logger.debug(
-        `JWT validated successfully for user: ${user.id} (${user.email})`,
+        `JWT validated successfully for user: ${payload.sub} (${payload.email}) with role: ${payload.role}`,
       );
 
       return {
-        id: user.id,
-        email: user.email,
-        name: user.name || undefined,
+        id: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        role: payload.role,
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

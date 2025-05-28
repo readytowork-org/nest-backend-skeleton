@@ -1,94 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '@app/db';
 import { userSchema } from '@app/db/schemas/users';
 import { eq } from 'drizzle-orm';
 import { User, NewUser } from './types/user.types';
+import { UserRole } from './types/user.role.enum';
+import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly drizzle: DrizzleService) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async findOne(username: string): Promise<User | null> {
-    const users = await this.drizzle.db
-      .select()
-      .from(userSchema)
-      .where(eq(userSchema.name, username))
-      .limit(1);
-
-    if (!users.length) return null;
-
-    return users[0] as User;
+    return this.userRepository.findOne(username);
   }
 
   async findUnique(email: string): Promise<User | null> {
-    const users = await this.drizzle.db
-      .select()
-      .from(userSchema)
-      .where(eq(userSchema.email, email))
-      .limit(1);
-
-    if (!users.length) return null;
-
-    return users[0] as User;
+    return this.userRepository.findUnique(email);
   }
 
   async findById(id: number): Promise<User | null> {
-    const users = await this.drizzle.db
-      .select()
-      .from(userSchema)
-      .where(eq(userSchema.id, id))
-      .limit(1);
-
-    if (!users.length) return null;
-
-    return users[0] as User;
+    return this.userRepository.findById(id);
   }
 
   async create(
-    userData: Omit<NewUser, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,
+    userData: NewUser
   ): Promise<User> {
-    const result = await this.drizzle.db.insert(userSchema).values({
+    return this.userRepository.create({
       ...userData,
-      createdAt: new Date(),
+      role: userData.role || UserRole.USER
     });
-
-    // Get the created user
-    const users = await this.drizzle.db
-      .select()
-      .from(userSchema)
-      .where(eq(userSchema.id, result[0].insertId))
-      .limit(1);
-
-    if (!users.length) {
-      throw new Error('Failed to create user');
-    }
-
-    return users[0] as User;
   }
 
   async update(
     userId: number,
-    userData: Partial<Omit<NewUser, 'id' | 'createdAt'>>,
+    userData: NewUser
   ): Promise<User> {
-    await this.drizzle.db
-      .update(userSchema)
-      .set({
-        ...userData,
-        updatedAt: new Date(),
-      })
-      .where(eq(userSchema.id, userId));
-
-    // Get the updated user
-    const users = await this.drizzle.db
-      .select()
-      .from(userSchema)
-      .where(eq(userSchema.id, userId))
-      .limit(1);
-
-    if (!users.length) {
-      throw new Error('Failed to update user');
-    }
-
-    return users[0] as User;
+    return this.userRepository.update(userId, {
+      ...userData,
+      updatedAt: new Date(),
+    });
   }
 }

@@ -1,9 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import {
   HealthCheckService,
   HttpHealthIndicator,
   HealthCheck,
 } from '@nestjs/terminus';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+// import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('')
 export class HealthController {
@@ -13,6 +15,8 @@ export class HealthController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('BearerAuth')
   @HealthCheck()
   check() {
     return this.health.check([

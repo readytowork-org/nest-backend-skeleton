@@ -13,28 +13,22 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from './dto/auth.dto';
+import {
+  RegisterDto,
+  LoginDto,
+  RegisterResponseDto,
+  LoginResponseDto,
+  RefreshTokenResponseDto,
+  RefreshTokenDto,
+} from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-
-interface GoogleUser {
-  email: string;
-  firstName: string;
-  lastName: string;
-  picture: string;
-  accessToken: string;
-}
-
-interface AmazonUser {
-  email: string;
-  name: string;
-  userId: string;
-  picture?: string;
-  accessToken: string;
-}
+import { RolesGuard } from './guards/roles.guard';
+import { AmazonUser, GoogleUser } from './types/auth.types';
+// import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -47,13 +41,31 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register new user' })
+  @ApiOperation({
+    summary: 'Register new user',
+    description:
+      'Register a new user with optional role. Defaults to USER role if not specified.',
+  })
   @ApiBody({ type: RegisterDto })
-  @ApiResponse({ status: 201, description: 'User successfully registered' })
+  @ApiResponse({
+    status: 201,
+    description: 'User successfully registered',
+    type: RegisterResponseDto,
+    schema: {
+      example: {
+        message: 'User registered successfully',
+        statusCode: 201,
+      },
+    },
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 409, description: 'Email already exists' })
-  async register(@Body() registerDto: RegisterDto): Promise<any> {
-    this.logger.debug(`Registration attempt for email: ${registerDto.email}`);
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<RegisterResponseDto> {
+    this.logger.debug(
+      `Registration attempt for email: ${registerDto.email} with role: ${registerDto.role || 'USER'}`,
+    );
     return this.authService.register(registerDto);
   }
 
@@ -61,9 +73,29 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with credentials' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 200, description: 'User successfully logged in' })
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully logged in',
+    type: LoginResponseDto,
+    schema: {
+      example: {
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        user: {
+          id: 1,
+          email: 'user@example.com',
+          name: 'John Doe',
+          authProvider: 'local',
+          profilePicture: null,
+          role: 'USER',
+          createdAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: null,
+        },
+      },
+    },
+  })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto): Promise<any> {
+  async login(@Body() loginDto: LoginDto): Promise<LoginResponseDto> {
     this.logger.debug(`Login attempt for email: ${loginDto.email}`);
     return this.authService.login(loginDto);
   }
@@ -129,7 +161,7 @@ export class AuthController {
   }
 
   @Get('amazon')
-  @UseGuards(AuthGuard('amazon'))
+  @UseGuards(AuthGuard('amazon'), RolesGuard)
   @ApiOperation({ summary: 'Initiate Amazon OAuth authentication' })
   @ApiResponse({
     status: 302,
@@ -206,5 +238,32 @@ export class AuthController {
         `${frontendUrl}/login?auth_error=true&provider=amazon`,
       );
     }
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Refresh access token',
+    description:
+      'Get new access and refresh tokens using a valid refresh token',
+  })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens refreshed successfully',
+    type: RefreshTokenResponseDto,
+    schema: {
+      example: {
+        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResponseDto> {
+    this.logger.debug('Token refresh attempt');
+    return this.authService.refreshToken(refreshTokenDto);
   }
 }
