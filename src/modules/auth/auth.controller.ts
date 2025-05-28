@@ -19,22 +19,8 @@ import { AppLogger } from '@app/config/logger/app-logger.service';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-
-interface GoogleUser {
-  email: string;
-  firstName: string;
-  lastName: string;
-  picture: string;
-  accessToken: string;
-}
-
-interface AmazonUser {
-  email: string;
-  name: string;
-  userId: string;
-  picture?: string;
-  accessToken: string;
-}
+import { RolesGuard } from './guards/roles.guard';
+import { AmazonUser, GoogleUser } from './types/auth.types';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -129,7 +115,7 @@ export class AuthController {
   }
 
   @Get('amazon')
-  @UseGuards(AuthGuard('amazon'))
+  @UseGuards(AuthGuard('amazon'), RolesGuard)
   @ApiOperation({ summary: 'Initiate Amazon OAuth authentication' })
   @ApiResponse({
     status: 302,

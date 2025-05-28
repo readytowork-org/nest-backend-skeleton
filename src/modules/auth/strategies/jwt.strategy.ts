@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UsersService } from '@app/modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -7,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthUser, JwtPayload } from '../types/auth.types';
+import { UserRole } from '@app/modules/users/types/user.role.enum';
 
 interface ValidatedUser {
   id: number;
@@ -14,6 +13,7 @@ interface ValidatedUser {
   name: string;
   authProvider: string;
   profilePicture: string | null;
+  role: UserRole;
 }
 
 @Injectable()
@@ -43,7 +43,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       this.logger.debug(`Validating JWT payload for user: ${payload.email}`);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const userResult = await this.userService.findUnique(payload.email);
 
       if (!userResult) {
@@ -53,17 +52,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('Invalid token - user not found');
       }
 
-      // Type assertion to our known interface
       const user = userResult as ValidatedUser;
 
       this.logger.debug(
-        `JWT validated successfully for user: ${user.id} (${user.email})`,
+        `JWT validated successfully for user: ${user.id} (${user.email}) with role: ${user.role}`,
       );
 
       return {
         id: user.id,
         email: user.email,
         name: user.name || undefined,
+        role: user.role || UserRole.USER,
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

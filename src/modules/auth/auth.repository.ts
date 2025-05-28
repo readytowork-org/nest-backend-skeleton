@@ -19,6 +19,7 @@ import {
   UserData,
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
+import { UserRole } from '../users/types/user.role.enum';
 
 @Injectable()
 export class AuthRepository implements AuthRepositoryInterface {
@@ -141,12 +142,14 @@ export class AuthRepository implements AuthRepositoryInterface {
     email: string;
     name: string | null;
     profilePicture: string | null;
+    role: UserRole;
   }): string {
     const payload: TokenPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
       picture: user.profilePicture,
+      role: user.role,
     };
 
     return this.jwtService.sign(payload);

@@ -9,6 +9,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { AmazonStrategy } from './strategies/amazon.strategy';
 import { AuthRepository } from './auth.repository';
+// import { AuthRolesGuard } from './guards/auth-roles.guard';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { AuthRepository } from './auth.repository';
     JwtStrategy,
     GoogleStrategy,
     AmazonStrategy,
+    RolesGuard,
+    // AuthRolesGuard,
   ],
   controllers: [AuthController],
   exports: [AuthService],

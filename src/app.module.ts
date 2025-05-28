@@ -8,6 +8,7 @@ import { HealthModule } from '@modules/healthz/healthz.module';
 import { UsersModule } from './modules/users/users.module';
 import { TodosModule } from './modules';
 import { DrizzleModule } from './db';
+import { SeedingModule } from './modules/seed/seed.module';
 
 // import the config module
 @Module({
@@ -21,6 +22,7 @@ import { DrizzleModule } from './db';
     AuthModule,
     UsersModule,
     TodosModule,
+    SeedingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
