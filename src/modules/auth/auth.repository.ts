@@ -115,6 +115,7 @@ export class AuthRepository implements AuthRepositoryInterface {
     if (existingUser) {
       if (existingUser.authProvider !== 'google') {
         await this.userService.update(existingUser.id, {
+          ...existingUser,
           authProvider: 'google',
           profilePicture: picture || null,
         });
@@ -146,6 +147,7 @@ export class AuthRepository implements AuthRepositoryInterface {
     if (existingUser) {
       if (existingUser.authProvider !== 'amazon') {
         await this.userService.update(existingUser.id, {
+          ...existingUser,
           authProvider: 'amazon',
           profilePicture: picture || null,
         });
