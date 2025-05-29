@@ -21,7 +21,7 @@ export interface UserEntity {
 export interface SafeUser {
   email: string;
   name: string;
-  authProvider: string;
-  profilePicture: string | null;
+  auth_provider: string;
+  profile_picture: string | null;
   role: UserRole;
 }
