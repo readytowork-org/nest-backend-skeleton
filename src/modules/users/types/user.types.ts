@@ -19,6 +19,7 @@ export interface UserEntity {
 
 // Safe user type for API responses (without sensitive data)
 export interface SafeUser {
+  user_id: number;
   email: string;
   name: string;
   auth_provider: string;
