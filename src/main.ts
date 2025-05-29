@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { SeedingService } from './modules/seed/seed.service';
+import { GlobalExceptionFilter } from './lib/filters/global-exception.filter';
 
 async function bootstrap() {
   const bootstrapLogger = AppLogger.forRoot('NestJS-App');
@@ -26,6 +27,9 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors();
+
+  // global filter -> all unhandled exceptions are captured and formatted consistently and sent to the client
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // global validation pipe
   app.useGlobalPipes(

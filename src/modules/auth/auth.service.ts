@@ -10,7 +10,7 @@ import {
   AmazonUser,
   AuthenticatedUser,
   GoogleUser,
-  LoginResponse,
+  LoginResponseData,
   RefreshTokenResponse,
   RegisterResponse,
 } from './types/auth.types';
@@ -23,7 +23,9 @@ export class AuthService {
     return this.authRepository.register(registerDto);
   }
 
-  async login(loginDto: LoginDto): Promise<LoginResponse> {
+  async login(loginDto: LoginDto): Promise<LoginResponseData> {
+    // business logics
+
     return this.authRepository.login(loginDto);
   }
 
@@ -32,6 +34,7 @@ export class AuthService {
   ): Promise<RefreshTokenResponse> {
     return this.authRepository.refreshToken(refreshTokenDto);
   }
+
   async validateOrCreateGoogleUser(
     googleUser: GoogleUser,
   ): Promise<AuthenticatedUser> {

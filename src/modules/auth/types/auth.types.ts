@@ -40,10 +40,9 @@ export type AuthenticatedUser = Pick<User, 'id' | 'email'> & {
   role: UserRole;
 };
 
-export interface LoginResponse {
+export interface LoginResponseData extends SafeUser {
   accessToken: string;
   refreshToken: string;
-  user: SafeUser;
 }
 
 export interface RegisterResponse {

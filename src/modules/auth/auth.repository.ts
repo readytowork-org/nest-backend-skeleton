@@ -19,10 +19,10 @@ import {
   GoogleUser,
   TokenPayload,
   UserData,
-  LoginResponse,
   RegisterResponse,
   RefreshTokenPayload,
   RefreshTokenResponse,
+  LoginResponseData,
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UserRole } from '../users/types/user.role.enum';
@@ -37,6 +37,7 @@ export class AuthRepository implements AuthRepositoryInterface {
   ) {
     this.logger.setContext(AuthRepository.name);
   }
+
 
   async register(registerDto: RegisterDto): Promise<RegisterResponse> {
     const { email, password, name, role } = registerDto;
@@ -64,7 +65,7 @@ export class AuthRepository implements AuthRepositoryInterface {
     };
   }
 
-  async login(loginDto: LoginDto): Promise<LoginResponse> {
+  async login(loginDto: LoginDto): Promise<LoginResponseData> {
     const { email, password } = loginDto;
 
     const user = await this.userService.findUnique(email);
@@ -88,20 +89,17 @@ export class AuthRepository implements AuthRepositoryInterface {
 
     // Create safe user object (without password)
     const safeUser = {
-      id: user.id,
       email: user.email,
       name: user.name,
       authProvider: user.authProvider,
       profilePicture: user.profilePicture,
       role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
     };
 
     return {
       accessToken,
       refreshToken,
-      user: safeUser,
+      ...safeUser,
     };
   }
 
