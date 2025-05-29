@@ -24,8 +24,6 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<LoginResponseData> {
-    // business logics
-
     return this.authRepository.login(loginDto);
   }
 

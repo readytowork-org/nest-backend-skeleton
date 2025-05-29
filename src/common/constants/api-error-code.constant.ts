@@ -15,4 +15,4 @@ export const ApiErrorCode = {
   ExpiredToken: 'expired_token',
 } as const;
 
-export type ApiErrorCode = typeof ApiErrorCode[keyof typeof ApiErrorCode];
+export type ApiErrorCode = (typeof ApiErrorCode)[keyof typeof ApiErrorCode];

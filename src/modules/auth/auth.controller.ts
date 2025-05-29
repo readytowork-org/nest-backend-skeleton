@@ -27,7 +27,7 @@ import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from './guards/roles.guard';
 import { AmazonUser, GoogleUser, LoginResponseData } from './types/auth.types';
-import { SuccessResponseWithData } from '@app/lib';
+import { ResponseWithData, SuccessResponseWithData } from '@app/lib';
 // import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Authentication')
@@ -79,9 +79,11 @@ export class AuthController {
     type: SuccessResponseWithData<LoginResponseData>,
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto): Promise<LoginResponseData> {
-    this.logger.debug(`Login attempt for email: ${loginDto.email}`);
-    return this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+  ): Promise<ResponseWithData<LoginResponseData>> {
+    const data = await this.authService.login(loginDto);
+    return SuccessResponseWithData('User logged in successfully', data);
   }
 
   @Get('google')

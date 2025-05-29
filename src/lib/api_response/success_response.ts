@@ -1,17 +1,17 @@
-export interface Response {
+export interface ResponseWithMessage {
   message: string;
 }
 
-export interface ResponseWithData<T> extends Response {
+export interface ResponseWithData<T> extends ResponseWithMessage {
   data: T;
 }
 
-export interface ResponseWithCount<T> extends Response {
+export interface ResponseWithCount<T> extends ResponseWithMessage {
   data: T;
   count: number;
 }
 
-export function SuccessResponseMessage(message: string): Response {
+export function SuccessResponseMessage(message: string): ResponseWithMessage {
   return { message };
 }
 

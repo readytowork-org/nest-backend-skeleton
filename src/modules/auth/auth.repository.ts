@@ -26,6 +26,8 @@ import {
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UserRole } from '../users/types/user.role.enum';
+import { ErrorResponseException } from '@app/lib';
+import { ApiErrorCode } from '@app/common';
 
 @Injectable()
 export class AuthRepository implements AuthRepositoryInterface {
@@ -37,7 +39,6 @@ export class AuthRepository implements AuthRepositoryInterface {
   ) {
     this.logger.setContext(AuthRepository.name);
   }
-
 
   async register(registerDto: RegisterDto): Promise<RegisterResponse> {
     const { email, password, name, role } = registerDto;
@@ -70,7 +71,11 @@ export class AuthRepository implements AuthRepositoryInterface {
 
     const user = await this.userService.findUnique(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new ErrorResponseException(
+        ApiErrorCode.NotFound,
+        'invalid_credentials',
+        'Invalid credentials',
+      );
     }
 
     if (user.authProvider !== 'local') {
