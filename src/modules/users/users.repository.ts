@@ -21,7 +21,7 @@ export class UserRepository {
     return users[0] as User;
   }
 
-  async findUnique(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User | null> {
     const users = await this.drizzle.db
       .select()
       .from(userSchema)

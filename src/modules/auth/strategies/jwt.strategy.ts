@@ -23,10 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly logger: AppLogger,
     private readonly configService: ConfigService,
   ) {
-    const jwtSecret = configService.get<string>('JWT_SECRET');
+    const jwtSecret = configService.get<string>('JWT_ACCESS_SECRET');
 
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET environment variable is not set');
+      throw new Error('JWT_ACCESS_SECRET environment variable is not set');
     }
 
     super({

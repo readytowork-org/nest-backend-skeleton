@@ -11,19 +11,6 @@ export interface TokenPayload {
   iat?: number; // issued at
   exp?: number; // expires at
 }
-export interface RefreshTokenResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface RefreshTokenPayload {
-  sub: number; // user id
-  email: string;
-  tokenType: 'refresh';
-  iat?: number; // issued at
-  exp?: number; // expires at
-}
-
 export interface UserData {
   email: string;
   password: string;
@@ -41,13 +28,8 @@ export type AuthenticatedUser = Pick<User, 'id' | 'email'> & {
 };
 
 export interface LoginResponseData extends SafeUser {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface RegisterResponse {
-  message: string;
-  statusCode: number;
+  access_token: string;
+  refresh_token: string;
 }
 
 export interface GoogleUser {

@@ -8,7 +8,6 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole } from '@app/modules/users/types/user.role.enum';
-import { SafeUser } from '@app/modules/users/types/user.types';
 
 export class RegisterDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -50,43 +49,6 @@ export class LoginDto {
   password: string;
 }
 
-// Response DTOs
-export class RegisterResponseDto {
-  @ApiProperty({ example: 'User registered successfully' })
-  message: string;
-
-  @ApiProperty({ example: 201 })
-  statusCode: number;
-}
-
-export class LoginResponseDto {
-  @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    description: 'JWT access token',
-  })
-  accessToken: string;
-
-  @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    description: 'JWT refresh token',
-  })
-  refreshToken: string;
-
-  @ApiProperty({
-    description: 'User information',
-    example: {
-      id: 1,
-      email: 'user@example.com',
-      name: 'John Doe',
-      authProvider: 'local',
-      profilePicture: null,
-      createdAt: '2024-01-01T00:00:00.000Z',
-      updatedAt: null,
-    },
-  })
-  user: SafeUser;
-}
-
 export class RefreshTokenDto {
   @ApiProperty({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -94,19 +56,45 @@ export class RefreshTokenDto {
   })
   @IsString({ message: 'Refresh token must be a string' })
   @IsNotEmpty({ message: 'Refresh token is required' })
-  refreshToken: string;
+  refresh_token: string;
 }
 
-export class RefreshTokenResponseDto {
-  @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    description: 'New JWT access token',
-  })
-  accessToken: string;
+export class SafeUserDto {
+  @ApiProperty()
+  user_id: string;
 
-  @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    description: 'New JWT refresh token',
-  })
-  refreshToken: string;
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  auth_provider: string;
+
+  @ApiProperty()
+  profile_picture: string | null;
+
+  @ApiProperty({ example: UserRole.USER })
+  role: UserRole;
+}
+
+export class LoginResponseDto extends SafeUserDto {
+  @ApiProperty({ example: 'Success' })
+  access_token: string;
+
+  @ApiProperty()
+  refresh_token: string;
+}
+
+export class LoginResponseWithMessageDto {
+  @ApiProperty({ example: 'Success' })
+  message: string;
+}
+export class LoginResponseWithDataDto {
+  @ApiProperty({ example: 'Success' })
+  message: string;
+
+  @ApiProperty()
+  data: LoginResponseDto;
 }

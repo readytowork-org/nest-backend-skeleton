@@ -11,21 +11,23 @@ export interface ResponseWithCount<T> extends ResponseWithMessage {
   count: number;
 }
 
-export function SuccessResponseMessage(message: string): ResponseWithMessage {
-  return { message };
+export function SuccessResponseMessage(response: {
+  message: string;
+}): ResponseWithMessage {
+  return response;
 }
 
-export function SuccessResponseWithData<T>(
-  message: string,
-  data: T,
-): ResponseWithData<T> {
-  return { message, data };
+export function SuccessResponseWithData<T>(response: {
+  message: string;
+  data: T;
+}): ResponseWithData<T> {
+  return response;
 }
 
-export function SuccessResponseWithCount<T>(
-  message: string,
-  data: T,
-  count: number,
-): ResponseWithCount<T> {
-  return { message, data, count };
+export function SuccessResponseWithCount<T>(response: {
+  message: string;
+  data: T;
+  count: number;
+}): ResponseWithCount<T> {
+  return response;
 }
