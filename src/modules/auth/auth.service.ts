@@ -59,6 +59,7 @@ export class AuthService {
     const access_token = this.generateAccessToken(user);
     const refresh_token = this.generateRefreshToken(user);
     return {
+      user_id: user.id,
       email: user.email,
       name: user.name,
       auth_provider: user.authProvider,
@@ -86,6 +87,7 @@ export class AuthService {
     const access_token = this.generateAccessToken(user);
     const refresh_token = this.generateRefreshToken(user);
     return {
+      user_id: user.id,
       email: user.email,
       name: user.name,
       auth_provider: user.authProvider,
