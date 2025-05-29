@@ -2,7 +2,7 @@ import {
   AuthenticatedUser,
   GoogleUser,
   AmazonUser,
-  LoginResponse,
+  LoginResponseData,
   RegisterResponse,
   RefreshTokenResponse,
 } from '../types/auth.types';
@@ -11,7 +11,7 @@ import { RegisterDto, LoginDto, RefreshTokenDto } from '../dto/auth.dto';
 // Core repository interface
 export interface AuthRepositoryInterface {
   register(registerDto: RegisterDto): Promise<RegisterResponse>;
-  login(loginDto: LoginDto): Promise<LoginResponse>;
+  login(loginDto: LoginDto): Promise<LoginResponseData>;
   refreshToken(refreshTokenDto: RefreshTokenDto): Promise<RefreshTokenResponse>;
   validateOrCreateGoogleUser(
     googleUser: GoogleUser,

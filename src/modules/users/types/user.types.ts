@@ -19,12 +19,9 @@ export interface UserEntity {
 
 // Safe user type for API responses (without sensitive data)
 export interface SafeUser {
-  id: number;
   email: string;
   name: string;
   authProvider: string;
   profilePicture: string | null;
   role: UserRole;
-  createdAt: Date;
-  updatedAt: Date | null;
 }

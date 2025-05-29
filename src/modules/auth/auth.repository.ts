@@ -19,13 +19,15 @@ import {
   GoogleUser,
   TokenPayload,
   UserData,
-  LoginResponse,
   RegisterResponse,
   RefreshTokenPayload,
   RefreshTokenResponse,
+  LoginResponseData,
 } from './types/auth.types';
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UserRole } from '../users/types/user.role.enum';
+import { ErrorResponseException } from '@app/lib';
+import { ApiErrorCode } from '@app/common';
 
 @Injectable()
 export class AuthRepository implements AuthRepositoryInterface {
@@ -64,12 +66,16 @@ export class AuthRepository implements AuthRepositoryInterface {
     };
   }
 
-  async login(loginDto: LoginDto): Promise<LoginResponse> {
+  async login(loginDto: LoginDto): Promise<LoginResponseData> {
     const { email, password } = loginDto;
 
     const user = await this.userService.findUnique(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new ErrorResponseException(
+        ApiErrorCode.NotFound,
+        'invalid_credentials',
+        'Invalid credentials',
+      );
     }
 
     if (user.authProvider !== 'local') {
@@ -88,20 +94,17 @@ export class AuthRepository implements AuthRepositoryInterface {
 
     // Create safe user object (without password)
     const safeUser = {
-      id: user.id,
       email: user.email,
       name: user.name,
       authProvider: user.authProvider,
       profilePicture: user.profilePicture,
       role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
     };
 
     return {
       accessToken,
       refreshToken,
-      user: safeUser,
+      ...safeUser,
     };
   }
 
