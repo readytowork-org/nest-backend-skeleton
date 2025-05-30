@@ -137,16 +137,18 @@ export class AuthController {
       const result = await this.authService.validateOrCreateGoogleUser(
         req.user as GoogleUser,
       );
-      if (!result || !result.token) {
-        this.logger.error('Failed to get token for Google user');
+      if (!result || !result.access_token) {
+        this.logger.error('Failed to get tokens for Google user');
         throw new UnauthorizedException('Authentication failed');
       }
+
       // Get frontend URL from configuration (providing proper fallbacks)
       const frontendUrl =
         this.configService.get<string>('FRONTEND_URL') ||
         'http://localhost:5173';
-      // Use the specific /auth/callback path that React Router is configured to handle
-      const redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}`;
+
+      // Use the specific /auth/callback path with both tokens
+      const redirectUrl = `${frontendUrl}/auth/callback?access_token=${encodeURIComponent(result.access_token)}&refresh_token=${encodeURIComponent(result.refresh_token)}`;
       this.logger.debug(`Redirecting to frontend: ${redirectUrl}`);
       return res.redirect(302, redirectUrl);
     } catch (error) {
@@ -206,16 +208,18 @@ export class AuthController {
       const result = await this.authService.validateOrCreateAmazonUser(
         req.user as AmazonUser,
       );
-      if (!result || !result.token) {
-        this.logger.error('Failed to get token for Amazon user');
+      if (!result || !result.access_token) {
+        this.logger.error('Failed to get tokens for Amazon user');
         throw new UnauthorizedException('Authentication failed');
       }
+
       // Get frontend URL from configuration (providing proper fallbacks)
       const frontendUrl =
         this.configService.get<string>('FRONTEND_URL') ||
         'http://localhost:5173';
-      // Use the specific /auth/callback path that React Router is configured to handle
-      const redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}`;
+
+      // Use the specific /auth/callback path with both tokens
+      const redirectUrl = `${frontendUrl}/auth/callback?access_token=${encodeURIComponent(result.access_token)}&refresh_token=${encodeURIComponent(result.refresh_token)}`;
       this.logger.debug(`Redirecting to frontend: ${redirectUrl}`);
       return res.redirect(302, redirectUrl);
     } catch (error) {

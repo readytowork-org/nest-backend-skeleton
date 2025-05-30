@@ -81,9 +81,10 @@ export class AuthService {
       },
     );
     const user = await this.userRepository.findByEmail(decodedToken.email);
-    if (user?.authProvider !== 'local') {
-      throw new Error('USER_NOT_LOCAL');
+    if (!user) {
+      throw new Error('USER_NOT_FOUND');
     }
+    // Allow all auth providers (local, google, amazon) to use refresh tokens
     const access_token = this.generateAccessToken(user);
     const refresh_token = this.generateRefreshToken(user);
     return {
@@ -100,7 +101,7 @@ export class AuthService {
 
   async validateOrCreateGoogleUser(
     googleUser: GoogleUser,
-  ): Promise<AuthenticatedUser> {
+  ): Promise<LoginResponseData> {
     const existingUser = await this.userRepository.findByEmail(
       googleUser.email,
     );
@@ -112,8 +113,18 @@ export class AuthService {
           profilePicture: googleUser.picture || null,
         });
       }
-      const token = this.generateAccessToken(existingUser);
-      return { ...existingUser, token };
+      const access_token = this.generateAccessToken(existingUser);
+      const refresh_token = this.generateRefreshToken(existingUser);
+      return {
+        user_id: existingUser.id,
+        email: existingUser.email,
+        name: existingUser.name,
+        auth_provider: existingUser.authProvider,
+        profile_picture: existingUser.profilePicture,
+        role: existingUser.role,
+        access_token,
+        refresh_token,
+      };
     }
     const userData: UserData = {
       email: googleUser.email,
@@ -127,13 +138,23 @@ export class AuthService {
     };
 
     const newUser = await this.userRepository.create(userData);
-    const token = this.generateAccessToken(newUser);
-    return { ...newUser, token };
+    const access_token = this.generateAccessToken(newUser);
+    const refresh_token = this.generateRefreshToken(newUser);
+    return {
+      user_id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      auth_provider: newUser.authProvider,
+      profile_picture: newUser.profilePicture,
+      role: newUser.role,
+      access_token,
+      refresh_token,
+    };
   }
 
   async validateOrCreateAmazonUser(
     amazonUser: AmazonUser,
-  ): Promise<AuthenticatedUser> {
+  ): Promise<LoginResponseData> {
     const existingUser = await this.userRepository.findByEmail(
       amazonUser.email,
     );
@@ -145,8 +166,18 @@ export class AuthService {
           profilePicture: amazonUser.picture || null,
         });
       }
-      const token = this.generateAccessToken(existingUser);
-      return { ...existingUser, token };
+      const access_token = this.generateAccessToken(existingUser);
+      const refresh_token = this.generateRefreshToken(existingUser);
+      return {
+        user_id: existingUser.id,
+        email: existingUser.email,
+        name: existingUser.name,
+        auth_provider: existingUser.authProvider,
+        profile_picture: existingUser.profilePicture,
+        role: existingUser.role,
+        access_token,
+        refresh_token,
+      };
     }
     const userData: UserData = {
       email: amazonUser.email,
@@ -158,8 +189,18 @@ export class AuthService {
     };
 
     const newUser = await this.userRepository.create(userData);
-    const token = this.generateAccessToken(newUser);
-    return { ...newUser, token };
+    const access_token = this.generateAccessToken(newUser);
+    const refresh_token = this.generateRefreshToken(newUser);
+    return {
+      user_id: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+      auth_provider: newUser.authProvider,
+      profile_picture: newUser.profilePicture,
+      role: newUser.role,
+      access_token,
+      refresh_token,
+    };
   }
 
   private generateAccessToken(user: {
