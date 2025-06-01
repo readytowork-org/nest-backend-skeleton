@@ -8,7 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { AmazonStrategy } from './strategies/amazon.strategy';
-import { AuthRepository } from './auth.repository';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
@@ -18,21 +18,22 @@ import { AuthRepository } from './auth.repository';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.get<string>('JWT_ACCESS_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '7d',
+          expiresIn: configService.get<string>('JWT_ACCESS_EXPIRES_IN') || '1h',
         },
       }),
     }),
   ],
   providers: [
     AuthService,
-    AuthRepository,
     JwtStrategy,
     GoogleStrategy,
     AmazonStrategy,
+    RolesGuard,
+    // AuthRolesGuard,
   ],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService, RolesGuard],
 })
 export class AuthModule {}

@@ -1,3 +1,3 @@
 export * from './auth/auth.module';
-export * from './todos/todos.module';
+export * from './users/users.module';
 export * from './healthz/healthz.module';
