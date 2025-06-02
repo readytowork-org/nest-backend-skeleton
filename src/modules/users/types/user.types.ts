@@ -1,4 +1,5 @@
 import { userSchema } from '@app/db/schemas/users';
+import { UserRole } from './user.role.enum';
 
 export type User = typeof userSchema.$inferSelect;
 export type NewUser = typeof userSchema.$inferInsert;
@@ -18,11 +19,10 @@ export interface UserEntity {
 
 // Safe user type for API responses (without sensitive data)
 export interface SafeUser {
-  id: number;
+  user_id: number;
   email: string;
   name: string;
-  authProvider: string;
-  profilePicture: string | null;
-  createdAt: Date;
-  updatedAt: Date | null;
+  auth_provider: string;
+  profile_picture: string | null;
+  role: UserRole;
 }

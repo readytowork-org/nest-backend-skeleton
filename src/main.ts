@@ -14,6 +14,9 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors();
 
+  // global filter -> all unhandled exceptions are captured and formatted consistently and sent to the client
+  // app.useGlobalFilters(new GlobalExceptionFilter());
+
   // global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({

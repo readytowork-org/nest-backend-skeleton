@@ -1,25 +1,36 @@
-export interface TokenPayload {
-  sub: number;
-  email: string;
-  name: string | null;
-  picture: string | null;
-}
+import { UserRole } from '@app/modules/users/types/user.role.enum';
+import { User, SafeUser } from '@app/modules/users/types/user.types';
 
+export interface TokenPayload {
+  sub: number; // user id
+  email: string;
+  name: string;
+  authProvider: string;
+  profilePicture: string | null;
+  role: UserRole;
+  iat?: number; // issued at
+  exp?: number; // expires at
+}
 export interface UserData {
   email: string;
   password: string;
   name: string;
   authProvider: 'local' | 'google' | 'amazon';
   profilePicture: string | null;
+  role: UserRole;
 }
-
-import { User } from '@app/modules/users/types/user.types';
 
 export type AuthenticatedUser = Pick<User, 'id' | 'email'> & {
   name: string | null;
   token: string;
   picture?: string | null;
+  role: UserRole;
 };
+
+export interface LoginResponseData extends SafeUser {
+  access_token: string;
+  refresh_token: string;
+}
 
 export interface GoogleUser {
   email: string;
@@ -40,14 +51,19 @@ export interface AmazonUser {
 export interface JwtPayload {
   sub: number;
   email: string;
-  name: string | null;
-  picture: string | null;
+  name: string;
+  authProvider: string;
+  profilePicture: string | null;
+  role: UserRole;
+  iat?: number;
+  exp?: number;
 }
 
 export interface AuthUser {
   id: number;
   email: string;
   name?: string;
+  role: UserRole;
 }
 
 export type AuthProvider = 'local' | 'google' | 'amazon';
