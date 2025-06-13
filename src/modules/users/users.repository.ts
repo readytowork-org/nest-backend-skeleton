@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '@app/db';
 import { userSchema } from '@app/db/schemas/users';
-import { eq } from 'drizzle-orm';
+import { eq, gt, and } from 'drizzle-orm';
 import { User, NewUser } from './types/user.types';
 import { UserRole } from './types/user.role.enum';
 
@@ -38,6 +38,18 @@ export class UserRepository {
       .select()
       .from(userSchema)
       .where(eq(userSchema.id, id))
+      .limit(1);
+
+    if (!users.length) return null;
+
+    return users[0] as User;
+  }
+
+  async findUserByRole(email: string, role: UserRole): Promise<User | null> {
+    const users = await this.drizzle.db
+      .select()
+      .from(userSchema)
+      .where(and(eq(userSchema.email, email), eq(userSchema.role, role)))
       .limit(1);
 
     if (!users.length) return null;
@@ -92,5 +104,22 @@ export class UserRepository {
     }
 
     return users[0] as User;
+  }
+
+  async findByHashToken(hashedToken: string): Promise<User | undefined> {
+    const now = new Date();
+
+    const users = await this.drizzle.db
+      .select()
+      .from(userSchema)
+      .where(
+        and(
+          eq(userSchema.resetPasswordToken, hashedToken),
+          gt(userSchema.resetPasswordTokenExpiresAt, now),
+        ),
+      )
+      .limit(1);
+
+    return users[0];
   }
 }

@@ -26,3 +26,7 @@ export interface SafeUser {
   profile_picture: string | null;
   role: UserRole;
 }
+
+export interface UserWithOtpSessionId extends User {
+  otpSessionId: string;
+}

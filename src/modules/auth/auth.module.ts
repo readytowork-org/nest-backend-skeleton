@@ -8,8 +8,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { AmazonStrategy } from './strategies/amazon.strategy';
+import { LineAuthStrategy } from './strategies/line.strategy';
 import { RolesGuard } from './guards/roles.guard';
+import { OtpModule } from '../otp/otp.module';
 import { envVars } from '@app/config/env/env.validation';
+import { EmailService } from '@app/services/email/email.service';
+// import { EmailService } from '@app/services/email/email.service';
 
 @Module({
   imports: [
@@ -25,13 +29,16 @@ import { envVars } from '@app/config/env/env.validation';
         },
       }),
     }),
+    OtpModule,
   ],
   providers: [
     AuthService,
     JwtStrategy,
     GoogleStrategy,
     AmazonStrategy,
+    LineAuthStrategy,
     RolesGuard,
+    EmailService,
     // AuthRolesGuard,
   ],
   controllers: [AuthController],

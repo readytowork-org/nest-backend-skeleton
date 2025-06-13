@@ -15,9 +15,10 @@ export interface UserData {
   email: string;
   password: string;
   name: string;
-  authProvider: 'local' | 'google' | 'amazon';
+  authProvider: 'local' | 'google' | 'amazon' | 'line';
   profilePicture: string | null;
   role: UserRole;
+  phoneNumber?: string;
 }
 
 export type AuthenticatedUser = Pick<User, 'id' | 'email'> & {
@@ -48,6 +49,14 @@ export interface AmazonUser {
   accessToken: string;
 }
 
+export interface LineUser {
+  email: string;
+  name: string;
+  userId: string;
+  picture?: string;
+  accessToken: string;
+}
+
 export interface JwtPayload {
   sub: number;
   email: string;
@@ -66,4 +75,4 @@ export interface AuthUser {
   role: UserRole;
 }
 
-export type AuthProvider = 'local' | 'google' | 'amazon';
+export type AuthProvider = 'local' | 'google' | 'amazon' | 'line';

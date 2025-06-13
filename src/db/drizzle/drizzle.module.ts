@@ -4,6 +4,7 @@ import * as mysql from 'mysql2/promise';
 import { DrizzleService } from './drizzle.service';
 import { ConfigModule } from '@nestjs/config';
 import { DRIZZLE_CLIENT } from '@app/common';
+import { MigrationService } from './migration.service';
 import { envVars } from '@app/config/env/env.validation';
 
 @Module({
@@ -36,6 +37,7 @@ import { envVars } from '@app/config/env/env.validation';
       },
     },
     DrizzleService,
+    MigrationService,
   ],
   exports: [DRIZZLE_CLIENT, DrizzleService],
 })

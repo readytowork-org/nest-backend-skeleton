@@ -10,15 +10,25 @@ import { envVars } from '../env/env.validation';
 export class AppLogger implements LoggerService {
   private logger: Logger;
   private context: string;
-
   constructor() {
-    // Create logs directory if it doesn't exist
-    if (!fs.existsSync('logs')) {
-      fs.mkdirSync('logs');
-    }
+    const logTransports: any[] = [
+      new transports.Console({
+        format: format.combine(format.colorize({ all: true })),
+      }),
+    ];
 
+    if (envVars.ENVIRONMENT == 'local') {
+      if (!fs.existsSync('logs')) {
+        fs.mkdirSync('logs');
+      }
+      logTransports.push(
+        new transports.File({ filename: 'logs/error.log', level: 'error' }),
+        new transports.File({ filename: 'logs/combined.log' }),
+      );
+    }
+    // initialize the logger with Winston
     this.logger = createLogger({
-      level: envVars.ENVIRONMENT === 'production' ? 'info' : 'debug',
+      level: envVars.ENVIRONMENT === 'production' ? 'info' : 'info',
       format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.errors({ stack: true }),
@@ -31,13 +41,7 @@ export class AppLogger implements LoggerService {
           return `${String(timestamp)} [${String(level)}] [${ctxStr}]: ${msg} ${metaStr}`;
         }),
       ),
-      transports: [
-        new transports.Console({
-          format: format.combine(format.colorize({ all: true })),
-        }),
-        new transports.File({ filename: 'logs/error.log', level: 'error' }),
-        new transports.File({ filename: 'logs/combined.log' }),
-      ],
+      transports: logTransports,
     });
 
     // Set a default context based on the class name that's using this logger
@@ -73,13 +77,25 @@ export class AppLogger implements LoggerService {
 
   // Static method to create a logger for main.ts
   static forRoot(appName: string): LoggerService {
-    // Create logs directory if it doesn't exist
-    if (!fs.existsSync('logs')) {
-      fs.mkdirSync('logs');
+    const logTransports: any[] = [
+      new transports.Console({
+        format: format.combine(format.colorize({ all: true })),
+      }),
+    ];
+
+    if (envVars.ENVIRONMENT == 'local') {
+      // Create logs directory if it doesn't exist
+      if (!fs.existsSync('logs')) {
+        fs.mkdirSync('logs');
+      }
+      logTransports.push(
+        new transports.File({ filename: 'logs/error.log', level: 'error' }),
+        new transports.File({ filename: 'logs/combined.log' }),
+      );
     }
 
     const logger = createLogger({
-      level: envVars.ENVIRONMENT === 'production' ? 'info' : 'debug',
+      level: process.env.ENVIRONMENT === 'production' ? 'info' : 'info',
       format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.printf((info) => {
@@ -87,13 +103,7 @@ export class AppLogger implements LoggerService {
           return `${String(timestamp)} [${String(level)}] [${appName}]: ${String(message)}`;
         }),
       ),
-      transports: [
-        new transports.Console({
-          format: format.combine(format.colorize({ all: true })),
-        }),
-        new transports.File({ filename: 'logs/error.log', level: 'error' }),
-        new transports.File({ filename: 'logs/combined.log' }),
-      ],
+      transports: logTransports,
     });
 
     return {

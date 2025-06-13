@@ -8,7 +8,8 @@ import { HealthModule } from '@modules/healthz/healthz.module';
 import { UsersModule } from './modules/users/users.module';
 import { DrizzleModule } from './db';
 import { SeedingModule } from './modules/seed/seed.module';
-import { validate } from 'class-validator';
+import { validate } from './config/env/env.validation';
+import { HttpLoggerModule } from './config/middleware';
 
 // import the config module
 @Module({
@@ -20,6 +21,7 @@ import { validate } from 'class-validator';
         return validate(config);
       },
     }),
+    HttpLoggerModule,
     DrizzleModule,
     LoggerModule,
     HealthModule,

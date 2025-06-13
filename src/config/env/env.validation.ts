@@ -73,15 +73,15 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   JWT_ACCESS_EXPIRES_IN: string;
 
-  // @Type(() => Number)
-  // @IsNumber()
-  // @IsNotEmpty()
-  // RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: number;
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: number;
 
-  // @Type(() => Number)
-  // @IsNumber()
-  // @IsNotEmpty()
-  // SMS_OTP_EXPIRY_MINUTES: number;
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  SMS_OTP_EXPIRY_MINUTES: number;
 
   @IsString()
   @IsNotEmpty()
