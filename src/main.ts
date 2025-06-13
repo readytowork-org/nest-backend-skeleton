@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AppLogger } from '@app/config/logger/app-logger.service';
+import { envVars } from './config/env/env.validation';
 
 async function bootstrap() {
   const bootstrapLogger = AppLogger.forRoot('NestJS-App');
@@ -36,10 +37,10 @@ async function bootstrap() {
     defaultVersion: 'v1',
   });
 
-  if (process.env.NODE_ENV != 'production') {
+  if (envVars.ENVIRONMENT != 'production') {
     // swagger implementation
     const config = new DocumentBuilder()
-      .setTitle(`${process.env.NODE_ENV} Nest App Backend`)
+      .setTitle(`${envVars.ENVIRONMENT} Nest App Backend`)
       .setDescription('The bare skeleton API description')
       .setVersion('1.0')
       .addTag('Healthz', 'Get the status of the server')
@@ -54,7 +55,7 @@ async function bootstrap() {
     });
   }
 
-  const port = process.env.PORT ?? 3000;
+  const port = envVars.PORT ?? 3000;
   await app.listen(port);
 
   // logging the server status

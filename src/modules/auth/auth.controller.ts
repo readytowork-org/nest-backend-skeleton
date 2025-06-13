@@ -22,7 +22,6 @@ import {
 } from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AppLogger } from '@app/config/logger/app-logger.service';
-import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from './guards/roles.guard';
@@ -33,13 +32,13 @@ import {
   SuccessResponseMessage,
   SuccessResponseWithData,
 } from '@app/lib';
+import { envVars } from '@app/config/env/env.validation';
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService,
     private readonly logger: AppLogger,
   ) {}
 
@@ -127,6 +126,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Handle Google OAuth callback' })
   @ApiResponse({ status: 302, description: 'Redirect to frontend with token' })
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+    const frontendUrl = envVars.FRONTEND_URL;
     try {
       if (!req.user) {
         this.logger.error(
@@ -141,12 +141,6 @@ export class AuthController {
         this.logger.error('Failed to get tokens for Google user');
         throw new UnauthorizedException('Authentication failed');
       }
-
-      // Get frontend URL from configuration (providing proper fallbacks)
-      const frontendUrl =
-        this.configService.get<string>('FRONTEND_URL') ||
-        'http://localhost:5173';
-
       // Use the specific /auth/callback path with both tokens
       const redirectUrl = `${frontendUrl}/auth/callback?access_token=${encodeURIComponent(result.access_token)}&refresh_token=${encodeURIComponent(result.refresh_token)}`;
       this.logger.debug(`Redirecting to frontend: ${redirectUrl}`);
@@ -155,10 +149,6 @@ export class AuthController {
       this.logger.error(
         `Google auth callback error: ${error instanceof Error ? error.message : String(error)}`,
       );
-      // In case of error, redirect to frontend login page with error parameter
-      const frontendUrl =
-        this.configService.get<string>('FRONTEND_URL') ||
-        'http://localhost:5173';
       return res.redirect(
         302,
         `${frontendUrl}/login?auth_error=true&provider=google`,
@@ -187,6 +177,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Handle Amazon OAuth callback' })
   @ApiResponse({ status: 302, description: 'Redirect to frontend with token' })
   async amazonAuthCallback(@Req() req: Request, @Res() res: Response) {
+    const frontendUrl = envVars.FRONTEND_URL;
     try {
       if (!req.user) {
         this.logger.error(
@@ -212,12 +203,6 @@ export class AuthController {
         this.logger.error('Failed to get tokens for Amazon user');
         throw new UnauthorizedException('Authentication failed');
       }
-
-      // Get frontend URL from configuration (providing proper fallbacks)
-      const frontendUrl =
-        this.configService.get<string>('FRONTEND_URL') ||
-        'http://localhost:5173';
-
       // Use the specific /auth/callback path with both tokens
       const redirectUrl = `${frontendUrl}/auth/callback?access_token=${encodeURIComponent(result.access_token)}&refresh_token=${encodeURIComponent(result.refresh_token)}`;
       this.logger.debug(`Redirecting to frontend: ${redirectUrl}`);
@@ -226,10 +211,6 @@ export class AuthController {
       this.logger.error(
         `Amazon auth callback error: ${error instanceof Error ? error.message : String(error)}`,
       );
-      // In case of error, redirect to frontend login page with error parameter
-      const frontendUrl =
-        this.configService.get<string>('FRONTEND_URL') ||
-        'http://localhost:5173';
       return res.redirect(
         302,
         `${frontendUrl}/login?auth_error=true&provider=amazon`,

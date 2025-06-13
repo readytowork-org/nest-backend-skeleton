@@ -13,15 +13,15 @@ import {
 import { UserRepository } from '../users/users.repository';
 import { compare, hash } from 'bcrypt';
 import { UserRole } from '../users/types/user.role.enum';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/types/user.types';
+import { envVars } from '@app/config/env/env.validation';
+import { env } from 'process';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -77,7 +77,7 @@ export class AuthService {
     const decodedToken: TokenPayload = this.jwtService.verify(
       refreshTokenDto.refresh_token,
       {
-        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        secret: envVars.JWT_ACCESS_SECRET,
       },
     );
     const user = await this.userRepository.findByEmail(decodedToken.email);
@@ -220,8 +220,8 @@ export class AuthService {
       role: user.role,
     };
     return this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN'),
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: envVars.JWT_ACCESS_EXPIRES_IN,
+      secret: envVars.JWT_ACCESS_EXPIRES_IN,
     });
   }
 
@@ -242,8 +242,8 @@ export class AuthService {
       role: user.role,
     };
     return this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: envVars.JWT_REFRESH_EXPIRES_IN,
+      secret: envVars.JWT_REFRESH_SECRET,
     });
   }
 }

@@ -5,10 +5,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-amazon';
-import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
-// import { AppLogger } from '@app/common/logger/app-logger.service';
-// import { AppLogger } from '../../common/logger/app-logger.service';
+import { envVars } from '@app/config/env/env.validation';
 
 type AmazonProfile = {
   email: string;
@@ -20,15 +18,11 @@ type AmazonProfile = {
 
 @Injectable()
 export class AmazonStrategy extends PassportStrategy(Strategy, 'amazon') {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly authService: AuthService,
-    // private readonly logger: AppLogger,
-  ) {
+  constructor(private readonly authService: AuthService) {
     super({
-      clientID: configService.get<string>('AMAZON_CLIENT_ID'),
-      clientSecret: configService.get<string>('AMAZON_CLIENT_SECRET'),
-      callbackURL: configService.get<string>('AMAZON_CALLBACK_URL'),
+      clientID: envVars.AMAZON_CLIENT_ID,
+      clientSecret: envVars.AMAZON_CLIENT_SECRET,
+      callbackURL: envVars.AMAZON_CALLBACK_URL,
       scope: 'profile',
       authorizationURL: 'https://www.amazon.com/ap/oa',
       tokenURL: 'https://api.amazon.com/auth/o2/token',

@@ -1,11 +1,11 @@
 import { AppLogger } from '@app/config/logger/app-logger.service';
 import { UsersService } from '@app/modules/users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthUser, JwtPayload } from '../types/auth.types';
 import { UserRole } from '@app/modules/users/types/user.role.enum';
+import { envVars } from '@app/config/env/env.validation';
 
 interface ValidatedUser {
   id: number;
@@ -21,9 +21,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly userService: UsersService,
     private readonly logger: AppLogger,
-    private readonly configService: ConfigService,
+
   ) {
-    const jwtSecret = configService.get<string>('JWT_ACCESS_SECRET');
+    const jwtSecret = envVars.JWT_ACCESS_SECRET;
 
     if (!jwtSecret) {
       throw new Error('JWT_ACCESS_SECRET environment variable is not set');
