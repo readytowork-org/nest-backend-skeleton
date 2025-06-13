@@ -1,6 +1,7 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 import { createLogger, format, transports, Logger } from 'winston';
 import * as fs from 'fs';
+import { envVars } from '../env/env.validation';
 
 /**
  * Super simple logger implementation - no need to provide context
@@ -17,7 +18,7 @@ export class AppLogger implements LoggerService {
     }
 
     this.logger = createLogger({
-      level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+      level: envVars.ENVIRONMENT === 'production' ? 'info' : 'debug',
       format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.errors({ stack: true }),
@@ -78,7 +79,7 @@ export class AppLogger implements LoggerService {
     }
 
     const logger = createLogger({
-      level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+      level: envVars.ENVIRONMENT === 'production' ? 'info' : 'debug',
       format: format.combine(
         format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.printf((info) => {

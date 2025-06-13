@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { AmazonStrategy } from './strategies/amazon.strategy';
 import { RolesGuard } from './guards/roles.guard';
+import { envVars } from '@app/config/env/env.validation';
 
 @Module({
   imports: [
@@ -17,10 +18,10 @@ import { RolesGuard } from './guards/roles.guard';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_ACCESS_SECRET'),
+      useFactory: () => ({
+        secret: envVars.JWT_ACCESS_SECRET,
         signOptions: {
-          expiresIn: configService.get<string>('JWT_ACCESS_EXPIRES_IN') || '1h',
+          expiresIn: envVars.JWT_ACCESS_EXPIRES_IN || '1h',
         },
       }),
     }),

@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/mysql2';
 import * as mysql from 'mysql2/promise';
 import { DrizzleService } from './drizzle.service';
-import { ConfigService } from '@nestjs/config';
 import { ConfigModule } from '@nestjs/config';
 import { DRIZZLE_CLIENT } from '@app/common';
+import { envVars } from '@app/config/env/env.validation';
 
 @Module({
   imports: [ConfigModule],
@@ -13,15 +13,24 @@ import { DRIZZLE_CLIENT } from '@app/common';
   providers: [
     {
       provide: DRIZZLE_CLIENT,
-      inject: [ConfigService], //excess with nestJS config
-      useFactory: (configService: ConfigService) => {
+      inject: [],
+      useFactory: () => {
         const poolConnection = mysql.createPool({
           //concurrent connection with diff users
-          password: configService.get<string>('DB_PASSWORD'),
-          port: configService.get<number>('DB_PORT'),
-          host: configService.get<string>('DB_HOST'),
-          user: configService.get<string>('DB_USERNAME'),
-          database: configService.get<string>('DB_NAME'),
+          user: envVars.DB_USERNAME,
+          password: envVars.DB_PASSWORD,
+          database: envVars.DB_NAME,
+          port: envVars.DB_PORT,
+          // if not local then use socket for unix socket
+          ...(envVars.ENVIRONMENT != 'local'
+            ? {
+                socketPath: `/cloudsql/${envVars.DB_HOST}`,
+              }
+            : {
+                //if local then use socket path
+                host: envVars.DB_HOST,
+              }),
+          timezone: envVars.TZ,
         });
         return drizzle({ client: poolConnection });
       },
