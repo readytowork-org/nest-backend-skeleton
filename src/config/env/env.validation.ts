@@ -93,15 +93,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  ADMIN_FRONTEND_URL: string;
-
-  @IsString()
-  @IsOptional()
-  CONSUMER_FRONTEND_URL: string;
-
-  @IsString()
-  @IsOptional()
-  FORTUNE_TELLER_FRONTEND_URL: string;
+  FRONTEND_URL: string;
 
   @IsString()
   @IsNotEmpty()
@@ -162,6 +154,15 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   STORAGE_BUCKET_NAME: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  GCS_SIGNED_URL_EXPIRY_MINUTES: number;
+
+  @IsString()
+  @IsNotEmpty()
+  GOOGLE_APPLICATION_CREDENTIALS: string;
 }
 
 export function validate(config: Record<string, unknown>) {
