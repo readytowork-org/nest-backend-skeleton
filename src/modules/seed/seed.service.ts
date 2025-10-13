@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, Logger } from '@nestjs/common';
 import { hash } from 'bcrypt';
-import { UserRole } from '@app/modules/users/types/user.role.enum';
+import { UserRole } from '@app/common/types/enum/user.role.enum';
 import { UsersService } from '../users/users.service';
 import { envVars } from '@app/config/env/env.validation';
 import { SALT_ROUNDS } from '@app/common';
+import { AccountStatusEnum } from '@app/common/types';
 
 @Injectable()
 export class SeedingService {
@@ -34,10 +33,12 @@ export class SeedingService {
       await this.userService.create({
         email: systemEmail,
         password: hashedPassword,
-        name: 'System Administrator',
+        firstName: 'Admin',
+        lastName: 'Admin',
         authProvider: 'local',
         profilePicture: null,
         role: UserRole.ADMIN,
+        status: AccountStatusEnum.Active,
       });
       this.logger.log(
         `✅ Admin user created successfully with email: ${systemEmail}`,

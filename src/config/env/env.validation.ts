@@ -73,10 +73,10 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   JWT_ACCESS_EXPIRES_IN: string;
 
-  // @Type(() => Number)
-  // @IsNumber()
-  // @IsNotEmpty()
-  // RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: number;
+  @Type(() => Number)
+  @IsNumber()
+  @IsNotEmpty()
+  RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: number;
 
   // @Type(() => Number)
   // @IsNumber()
@@ -97,11 +97,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  CONSUMER_FRONTEND_URL: string;
-
-  @IsString()
-  @IsOptional()
-  FORTUNE_TELLER_FRONTEND_URL: string;
+  USER_FRONTEND_URL: string;
 
   @IsString()
   @IsNotEmpty()
@@ -138,26 +134,6 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   FROM_EMAIL: string;
-
-  @IsString()
-  @IsNotEmpty()
-  LINE_CHANNEL_ID: string;
-
-  @IsString()
-  @IsNotEmpty()
-  LINE_CHANNEL_SECRET: string;
-
-  @IsString()
-  @IsNotEmpty()
-  LINE_CALLBACK_URL: string;
-
-  @IsString()
-  @IsNotEmpty()
-  CPASS_SMS_TOKEN: string;
-
-  @IsString()
-  @IsNotEmpty()
-  CPASS_SMS_LINK: string;
 
   @IsString()
   @IsNotEmpty()

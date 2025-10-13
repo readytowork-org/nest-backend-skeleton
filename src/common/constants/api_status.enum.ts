@@ -8,4 +8,5 @@ export enum HttpErrorType {
   InternalError = 500,
   Unavailable = 503,
   TooManyRequests = 429,
+  Redirect = 302,
 }
