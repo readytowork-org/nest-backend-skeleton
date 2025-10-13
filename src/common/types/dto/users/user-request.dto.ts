@@ -61,11 +61,6 @@ export class CreateUserDto {
   address: string;
 
   @ApiProperty({ required: true })
-  @IsNumber()
-  @IsOptional()
-  facilityId: number;
-
-  @ApiProperty({ required: true })
   @IsString()
   @IsOptional()
   confirmPassword: string;

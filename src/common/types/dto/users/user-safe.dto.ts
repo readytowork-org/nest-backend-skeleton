@@ -24,9 +24,6 @@ export class UserDetailDto {
   role: UserRole;
 
   @ApiProperty()
-  facilityId: number | null;
-
-  @ApiProperty()
   address: string | null;
 
   @ApiProperty()

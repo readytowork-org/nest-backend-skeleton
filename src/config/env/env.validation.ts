@@ -111,28 +111,17 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   GOOGLE_CALLBACK_URL: string;
 
-  @IsString()
-  @IsNotEmpty()
-  AMAZON_CLIENT_ID: string;
 
   @IsString()
-  @IsNotEmpty()
-  AMAZON_CLIENT_SECRET: string;
-
-  @IsString()
-  @IsNotEmpty()
-  AMAZON_CALLBACK_URL: string;
-
-  @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   SENDGRID_API_URL: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   SENDGRID_API_KEY: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   FROM_EMAIL: string;
 
   @IsString()

@@ -44,7 +44,6 @@ export interface AuthUser {
   id: number;
   email: string;
   name?: string;
-  facilityId?: number | null;
   role: UserRole;
 }
 

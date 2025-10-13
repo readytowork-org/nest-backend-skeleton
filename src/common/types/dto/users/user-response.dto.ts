@@ -33,9 +33,6 @@ export class UserListDto {
   @ApiProperty()
   role: string;
 
-  @ApiProperty()
-  facilityId: number;
-
   @ApiProperty({ type: FacilityPreloadDto, required: false })
   facility?: FacilityPreloadDto; // <-- for preload
 

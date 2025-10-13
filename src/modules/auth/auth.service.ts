@@ -10,7 +10,7 @@ import {
   RequestUserRole,
   UserRole,
 } from '../../common/types/enum/user.role.enum';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { generateResetToken, getHashToken } from '@app/utils/token.util';
 import { EmailService } from '../../services/email/email.service';
 import {
@@ -196,7 +196,7 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       expiresIn: envVars.JWT_ACCESS_EXPIRES_IN,
       secret: envVars.JWT_ACCESS_SECRET,
-    });
+    } as JwtSignOptions);
   }
 
   private generateRefreshToken(user: User): string {
@@ -211,7 +211,7 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       expiresIn: envVars.JWT_REFRESH_EXPIRES_IN,
       secret: envVars.JWT_REFRESH_SECRET,
-    });
+    } as JwtSignOptions);
   }
 
   async requestPasswordReset(email: string, requestWithRole: UserRole) {
