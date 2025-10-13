@@ -7,10 +7,11 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '@app/modules/users/types/user.role.enum';
+import { UserRole } from '@app/common/types/enum/user.role.enum';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { AuthUser } from '../types/auth.types';
+import { AuthUser } from '../../../common/types/type/auth.type';
 import { AppLogger } from '@app/config/logger/app-logger.service';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -26,6 +27,12 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
+    const isPublic = this.reflector.get<boolean>(
+      IS_PUBLIC_KEY,
+      context.getHandler(),
+    );
+
+    if (isPublic) return true;
 
     if (!requiredRoles) {
       return true;

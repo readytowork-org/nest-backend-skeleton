@@ -1,22 +1,23 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
   HealthCheckService,
   HttpHealthIndicator,
   HealthCheck,
 } from '@nestjs/terminus';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
 // import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('')
+@ApiTags('Healthz')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
   ) {}
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  // @ApiBearerAuth('BearerAuth')
+  @Public()
+  @Get('healthz')
   @HealthCheck()
   check() {
     return this.health.check([

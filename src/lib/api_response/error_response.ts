@@ -1,28 +1,40 @@
 import { ApiErrorCode } from '@app/common';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpErrorType } from '@app/common/constants/api_status.enum';
+import { HttpException } from '@nestjs/common';
 
-// error response class for API responses
-export class ErrorResponse<T> {
-  error_code: ApiErrorCode;
+export class ErrorResponse {
+  success: boolean;
+  statusCode: HttpErrorType;
+  errorCode: ApiErrorCode;
   message: string;
-  error: T;
-  timestamp: string;
+  errors?: string[];
 
-  constructor(error_code: ApiErrorCode, field: string, error: T) {
-    this.error_code = error_code;
-    this.message = field;
-    this.error = error;
-    this.timestamp = new Date().toISOString();
+  constructor(
+    errorCode: ApiErrorCode,
+    message: string,
+    statusCode: HttpErrorType = HttpErrorType.BadRequest,
+    errors?: string[],
+  ) {
+    this.success = false;
+    this.statusCode = statusCode;
+    this.errorCode = errorCode;
+    this.message = message;
+    if (errors && errors.length > 0) {
+      this.errors = errors;
+    }
   }
 }
 
-export class ErrorResponseException<T> extends HttpException {
+export class ErrorResponseException extends HttpException {
   constructor(
-    error_code: ApiErrorCode,
+    errorCode: ApiErrorCode,
     message: string,
-    error: T,
-    statusCode: HttpStatus = HttpStatus.BAD_REQUEST,
+    statusCode: HttpErrorType = HttpErrorType.BadRequest,
+    errors?: string[],
   ) {
-    super(new ErrorResponse<T>(error_code, message, error), statusCode);
+    super(
+      new ErrorResponse(errorCode, message, statusCode, errors),
+      statusCode,
+    );
   }
 }

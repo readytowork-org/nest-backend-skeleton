@@ -1,5 +1,4 @@
-import { UserRole } from '@app/modules/users/types/user.role.enum';
-import { User, SafeUser } from '@app/modules/users/types/user.types';
+import { UserRole } from '@app/common/types/enum/user.role.enum';
 
 export interface TokenPayload {
   sub: number; // user id
@@ -11,25 +10,15 @@ export interface TokenPayload {
   iat?: number; // issued at
   exp?: number; // expires at
 }
+
 export interface UserData {
   email: string;
   password: string;
   name: string;
-  authProvider: 'local' | 'google' | 'amazon';
+  authProvider: 'local' | 'google' | 'amazon' | 'line';
   profilePicture: string | null;
   role: UserRole;
-}
-
-export type AuthenticatedUser = Pick<User, 'id' | 'email'> & {
-  name: string | null;
-  token: string;
-  picture?: string | null;
-  role: UserRole;
-};
-
-export interface LoginResponseData extends SafeUser {
-  access_token: string;
-  refresh_token: string;
+  phoneNumber?: string;
 }
 
 export interface GoogleUser {
@@ -37,14 +26,6 @@ export interface GoogleUser {
   firstName: string;
   lastName: string;
   picture: string;
-  accessToken: string;
-}
-
-export interface AmazonUser {
-  email: string;
-  name: string;
-  userId: string;
-  picture?: string;
   accessToken: string;
 }
 
@@ -66,4 +47,4 @@ export interface AuthUser {
   role: UserRole;
 }
 
-export type AuthProvider = 'local' | 'google' | 'amazon';
+export type AuthProvider = 'local' | 'google' | 'amazon' | 'line';
