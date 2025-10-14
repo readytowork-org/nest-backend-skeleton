@@ -5,7 +5,7 @@ A robust and scalable NestJS application skeleton with built-in best practices, 
 ## 🚀 Features
 
 - 🔐 Built-in authentication system
-- 📦 PostgreSQL database with Drizzle ORM
+- 📦 MySQL database with Drizzle ORM
 - 🧪 Comprehensive testing setup
 - 📝 API documentation with Swagger
 - 🔄 Hot-reload development environment
@@ -86,7 +86,13 @@ yarn start:debug
 # Start in production mode
 yarn build
 yarn start:prod
+
+
+#Using docker
+docker compose up
 ```
+
+
 
 ### Database Management
 
