@@ -14,6 +14,8 @@ services:
     container_name: nest-backend-starter
     depends_on:
       - database
+    networks:
+      - nestbackend-network
 
   database:
     build:
@@ -36,11 +38,18 @@ services:
       - ${DB_PORT}:3306
     volumes:
       - nest_db:/var/lib/mysql
+    networks:
+      - nestbackend-network
 
   adminer:
     image: adminer
     ports:
       - ${ADMINER_PORT}:8080
+    networks:
+      - nestbackend-network
 
 volumes:
   nest_db:
+
+networks:
+  nestbackend-network:

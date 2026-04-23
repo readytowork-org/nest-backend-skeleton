@@ -7,9 +7,10 @@ export const ErrorMessages = {
   EMAIL_OR_PHONE_NUMBER_ALREADY_EXISTS: 'Email or Phone number already exists',
   EMAIL_NOT_FOUND: 'No user found with this email address',
   INVALID_USER_DATA: 'Invalid user data provided',
-  USER_CREATED_SUCCESSFULLY: 'User created successfully',
-  USER_UPDATED_SUCCESSFULLY: 'User updated successfully',
-  USER_DELETED_SUCCESSFULLY: 'User deleted successfully',
+
+  STAFF_NOT_FOUND: 'Staff member not found',
+  INVALID_STAFF_ID: 'Invalid staff ID provided',
+  FAILED_TO_UPDATE_STAFF: 'Failed to update staff',
 
   // Authentication & Authorization Messages
   UNAUTHORIZED: 'You are not authorized to access this resource',
@@ -22,6 +23,10 @@ export const ErrorMessages = {
   SESSION_EXPIRED: 'Your session has expired, please login again',
   AUTHENTICATION_FAILED: 'Authentication failed',
   LOGIN_REQUIRED: 'Please login to access this resource',
+  INVALID_X_REQUESTED_WITH_HEADER:
+    'please provide valid x-requested-with header',
+  ACCOUNT_SUSPENDED: 'Account suspended, please contact with administration',
+
 
   // Password Management Messages
   INVALID_PASSWORD: 'Password does not meet requirements',

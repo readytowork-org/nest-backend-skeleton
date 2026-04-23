@@ -6,6 +6,7 @@ export const ApiErrorCode = {
   InvalidToken: 'invalid_token',
   InvalidRefreshToken: 'invalid_refresh_token',
   ExpiredToken: 'expired_token',
+  AccountSuspended: 'account_suspended',
 
   // General HTTP Errors
   BadRequest: 'bad_request',

@@ -1,7 +1,7 @@
 import { ApiErrorCode } from '@app/common/constants/api-error-code.constant';
 import { HttpErrorType } from '@app/common/constants/api_status.enum';
 import { ErrorMessages } from '@app/common/constants/error-message.constant';
-import { ErrorResponseException } from '@app/lib/api_response/error_response';
+import { ErrorResponseException } from '@app/common/api_response/error_response';
 
 // Base HTTP Exceptions
 export class BadRequestException extends ErrorResponseException {
@@ -79,6 +79,12 @@ export class InvalidRefreshTokenException extends ErrorResponseException {
   }
 }
 
+export class AccountSuspendedException extends ErrorResponseException {
+  constructor(message: string = ErrorMessages.ACCOUNT_SUSPENDED) {
+    super(ApiErrorCode.AccountSuspended, message, HttpErrorType.Unauthorized);
+  }
+}
+
 // User specific exceptions
 export class UserNotFoundException extends ErrorResponseException {
   constructor(message: string = ErrorMessages.USER_NOT_FOUND) {
@@ -108,6 +114,20 @@ export class PhoneAlreadyExistsException extends ErrorResponseException {
 export class DuplicateEntryException extends ErrorResponseException {
   constructor(message: string = ErrorMessages.DUPLICATE_ENTRY) {
     super(ApiErrorCode.DuplicateEntry, message, HttpErrorType.Conflict);
+  }
+}
+
+export class RecordExistsException extends ErrorResponseException {
+  constructor(
+    message: string = ErrorMessages.DUPLICATE_ENTRY,
+    errors?: string[],
+  ) {
+    super(
+      ApiErrorCode.DuplicateEntry,
+      message,
+      HttpErrorType.BadRequest,
+      errors,
+    );
   }
 }
 

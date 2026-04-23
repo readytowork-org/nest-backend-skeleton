@@ -1,17 +1,35 @@
-import { IsEmail, IsString, MinLength, IsNotEmpty } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UserRole } from '@app/common/types/enum/user.role.enum';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
-  @ApiProperty({ example: 'user@example.com' })
-  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @ApiProperty({ example: 'user1@example.com' })
+  @IsEmail()
   @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
-  @ApiProperty({ example: 'Password123!' })
+  @ApiProperty({ example: 'password' })
   @IsString({ message: 'Password must be a string' })
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
+}
+
+export class PlayerLoginDto {
+  @ApiProperty({ required: true, type: String })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(4)
+  @MinLength(4)
+  membershipNumber: string;
+
+  @ApiProperty({ required: true, type: String })
+  @IsString()
+  @IsNotEmpty()
+  firstNameKana: string;
+
+  @ApiProperty({ required: true, type: String })
+  @IsString()
+  @IsNotEmpty()
+  lastNameKana: string;
 }
 
 export class RefreshTokenDto {
@@ -49,26 +67,15 @@ export class ForgotPasswordDto {
 
 export class SafeUserDto {
   @ApiProperty()
-  user_id: number;
+  id: number;
 
   @ApiProperty()
   email: string;
 
   @ApiProperty()
-  first_name: string;
+  role: string;
 
-  @ApiProperty()
-  middle_name: string | null;
+  @ApiProperty({ type: String, nullable: true })
+  name: string | null;
 
-  @ApiProperty()
-  last_name: string;
-
-  @ApiProperty()
-  auth_provider: string;
-
-  @ApiProperty()
-  profile_picture: string | null;
-
-  @ApiProperty({ example: UserRole.USER })
-  role: UserRole;
 }

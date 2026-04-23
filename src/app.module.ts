@@ -3,12 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from '@app/config/logger/logger.module';
-import { AuthModule } from '@modules/auth/auth.module';
-import { HealthModule } from '@modules/healthz/healthz.module';
-import { UsersModule } from './modules/users/users.module';
 import { DrizzleModule } from './db';
-import { SeedingModule } from './modules/seed/seed.module';
 import { validate } from 'class-validator';
+import { SeedingModule } from './api/seed/seed.module';
+import { AuthModule, HealthModule } from './api';
 
 // import the config module
 @Module({
@@ -25,7 +23,6 @@ import { validate } from 'class-validator';
     HealthModule,
     AuthModule,
     SeedingModule,
-    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -73,16 +73,6 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   JWT_ACCESS_EXPIRES_IN: string;
 
-  @Type(() => Number)
-  @IsNumber()
-  @IsNotEmpty()
-  RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: number;
-
-  // @Type(() => Number)
-  // @IsNumber()
-  // @IsNotEmpty()
-  // SMS_OTP_EXPIRY_MINUTES: number;
-
   @IsString()
   @IsNotEmpty()
   SYSTEM_EMAIL: string;
@@ -90,14 +80,6 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   SYSTEM_PASSWORD: string;
-
-  @IsString()
-  @IsOptional()
-  ADMIN_FRONTEND_URL: string;
-
-  @IsString()
-  @IsOptional()
-  USER_FRONTEND_URL: string;
 
   @IsString()
   @IsNotEmpty()
@@ -111,15 +93,6 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   GOOGLE_CALLBACK_URL: string;
 
-
-  @IsString()
-  @IsOptional()
-  SENDGRID_API_URL: string;
-
-  @IsString()
-  @IsOptional()
-  SENDGRID_API_KEY: string;
-
   @IsString()
   @IsOptional()
   FROM_EMAIL: string;
@@ -127,6 +100,27 @@ export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
   STORAGE_BUCKET_NAME: string;
+
+  @IsString()
+  @IsNotEmpty()
+  ADMIN_FRONTEND_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  MAIL_CLIENT_ID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  MAIL_CLIENT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  MAIL_REFRESH_TOKEN: string;
+
+  @IsString()
+  @IsNotEmpty()
+  MAIL_ACCESS_TOKEN: string;
+
 }
 
 export function validate(config: Record<string, unknown>) {

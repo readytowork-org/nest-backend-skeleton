@@ -7,7 +7,7 @@ import {
   IsOptional,
   IsEnum,
 } from 'class-validator';
-import { UserRole } from '../../enum';
+import { USER_ROLE } from '../../enum';
 
 export class BaseUserDto {
   @ApiProperty({ example: 'user@example.com' })
@@ -32,12 +32,12 @@ export class BaseUserDto {
   password: string;
 
   @ApiPropertyOptional({
-    example: UserRole.USER,
-    enum: UserRole,
-    description: 'User role - defaults to USER if not provided',
-    default: UserRole.USER,
+    example: USER_ROLE.PLAYER,
+    enum: USER_ROLE,
+    description: 'User role - defaults to PLAYER if not provided',
+    default: USER_ROLE.PLAYER,
   })
   @IsOptional()
-  @IsEnum(UserRole, { message: 'Role must be a valid UserRole' })
-  role?: UserRole;
+  @IsEnum(USER_ROLE, { message: 'Role must be a valid USER_ROLE' })
+  role?: USER_ROLE;
 }
