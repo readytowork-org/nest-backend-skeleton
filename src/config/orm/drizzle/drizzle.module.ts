@@ -27,7 +27,7 @@ import { DBClientObj } from './db.client';
           password: envVars.DB_PASSWORD,
           database: envVars.DB_NAME,
           port: envVars.DB_PORT,
-          ...(envVars.ENVIRONMENT == 'production'
+          ...(envVars.ENVIRONMENT != 'local'
             ? {
                 socketPath: `/cloudsql/${envVars.DB_HOST}`,
               }

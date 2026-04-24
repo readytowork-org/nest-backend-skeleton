@@ -19,7 +19,7 @@ export class StorageService {
 
   constructor() {
     // Ensure uploads directory exists
-    if (envVars.ENVIRONMENT != 'production') {
+    if (envVars.ENVIRONMENT === 'local') {
       if (!fs.existsSync(this.baseUploadDir)) {
         fs.mkdirSync(this.baseUploadDir, { recursive: true });
         this.logger.log(
