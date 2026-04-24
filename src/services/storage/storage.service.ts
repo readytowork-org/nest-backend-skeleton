@@ -19,11 +19,13 @@ export class StorageService {
 
   constructor() {
     // Ensure uploads directory exists
-    if (!fs.existsSync(this.baseUploadDir)) {
-      fs.mkdirSync(this.baseUploadDir, { recursive: true });
-      this.logger.log(
-        `Created base upload directory at: ${this.baseUploadDir}`,
-      );
+    if (envVars.ENVIRONMENT != 'production') {
+      if (!fs.existsSync(this.baseUploadDir)) {
+        fs.mkdirSync(this.baseUploadDir, { recursive: true });
+        this.logger.log(
+          `Created base upload directory at: ${this.baseUploadDir}`,
+        );
+      }
     }
   }
 
