@@ -1,3 +1,4 @@
+import { Public } from '@app/services/auth/decorators/public.decorator';
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -5,7 +6,6 @@ import {
   HttpHealthIndicator,
   HealthCheck,
 } from '@nestjs/terminus';
-import { Public } from '../../services/auth/decorators/public.decorator';
 // import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('')

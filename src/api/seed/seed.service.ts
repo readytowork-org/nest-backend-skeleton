@@ -3,14 +3,11 @@ import { envVars } from '@app/config/env/env.validation';
 import { StaffService } from '@app/api/admin/staffs/staff.service';
 import { CreateStaffDto, USER_ROLE } from '@app/common/types';
 
-
 @Injectable()
 export class SeedingService {
   private readonly logger = new Logger(SeedingService.name);
 
-  constructor(
-    private readonly staffService: StaffService,
-  ) {}
+  constructor(private readonly staffService: StaffService) {}
 
   async seedAdmin(): Promise<void> {
     try {
