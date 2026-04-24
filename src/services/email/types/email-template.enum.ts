@@ -1,3 +1,3 @@
 export enum EmailTemplateEnum {
-  ResetPassword = 'reset-password',
+  LoginSuccess = 'login-success',
 }

@@ -8,11 +8,11 @@ import {
   ClassSerializerInterceptor,
   VersioningType,
 } from '@nestjs/common';
-import { GlobalExceptionFilter } from './lib/filters/global-exception.filter';
 import { Reflector } from '@nestjs/core';
 import { MigrationService } from './db/drizzle/migration.service';
-import { SeedingService } from './modules/seed/seed.service';
 import { envVars } from './config/env/env.validation';
+import { SeedingService } from './api/seed/seed.service';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
   const bootstrapLogger = AppLogger.forRoot('NestJS-App');

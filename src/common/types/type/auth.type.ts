@@ -1,12 +1,11 @@
-import { UserRole } from '@app/common/types/enum/user.role.enum';
+import { USER_ROLE, USER_ROLE_DB } from '@app/common/types/enum/user.role.enum';
 
 export interface TokenPayload {
   sub: number; // user id
+  membershipId: string | null; // member id for players
   email: string;
   name: string;
-  authProvider: string;
-  profilePicture: string | null;
-  role: UserRole;
+  role: USER_ROLE_DB;
   iat?: number; // issued at
   exp?: number; // expires at
 }
@@ -15,9 +14,9 @@ export interface UserData {
   email: string;
   password: string;
   name: string;
-  authProvider: 'local' | 'google' | 'amazon' | 'line';
+  authProvider: AuthProvider;
   profilePicture: string | null;
-  role: UserRole;
+  role: USER_ROLE;
   phoneNumber?: string;
 }
 
@@ -35,7 +34,7 @@ export interface JwtPayload {
   name: string;
   authProvider: string;
   profilePicture: string | null;
-  role: UserRole;
+  role: USER_ROLE;
   iat?: number;
   exp?: number;
 }
@@ -43,8 +42,20 @@ export interface JwtPayload {
 export interface AuthUser {
   id: number;
   email: string;
-  name?: string;
-  role: UserRole;
+  name: string;
+  role?: string;
+  isActive?: number;
 }
 
-export type AuthProvider = 'local' | 'google' | 'amazon' | 'line';
+export type AuthProviderUser = {
+  email: string;
+  accessToken: string;
+  providerId: string;
+  name?: string;
+  profilePicture?: string;
+  role: USER_ROLE;
+};
+
+export type AuthProvider = 'local' | 'google';
+
+export type XRequestedWithEnum = 'player';

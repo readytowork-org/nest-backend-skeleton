@@ -5,5 +5,5 @@ export type EmailWithTemplateData = {
   to: string;
   subject: EmailTemplateSubjectEnum;
   templateName: EmailTemplateEnum;
-  data: Record<string, any>;
+  context: Record<string, any>;
 };

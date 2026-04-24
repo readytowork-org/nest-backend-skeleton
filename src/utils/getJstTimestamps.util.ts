@@ -33,3 +33,12 @@ export const getCurrentJstTime = () => {
   const jstTime = dayjs().tz(userTimezone).format('YYYY-MM-DD HH:mm:ss');
   return jstTime;
 };
+
+export const getCurrentFiscalYear = () => {
+  const fiscalYearStartMonth = 4;
+  const now = dayjs().tz(userTimezone);
+  const currentYear = now.year();
+  const startYear =
+    now.month() >= fiscalYearStartMonth - 1 ? currentYear : currentYear - 1;
+  return `${startYear}-${startYear + 1}`;
+};

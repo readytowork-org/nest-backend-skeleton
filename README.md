@@ -53,23 +53,64 @@ cp .env.example .env
 ## 🏗️ Project Structure
 
 ```
-src/
-├── app.controller.ts    # Root controller
-├── app.module.ts        # Root module
-├── app.service.ts       # Root service
-├── main.ts             # Application entry point
-├── config/             # Configuration files
-├── common/             # Shared utilities and decorators
-├── db/                 # Database related files
-│   ├── schemas/        # Drizzle schema definitions
-│   ├── drizzle/        # Drizzle ORM configuration
-│   └── index.ts        # Database exports
-└── modules/            # Feature modules
-    ├── auth/           # Authentication module
-    ├── users/          # Users module
-    ├── todos/          # Todos module
-    ├── healthz/        # Health check module
-    └── index.ts        # Module exports
+├── api
+│   ├── admin                             - admin modules
+│   │   ├── admin.module..ts
+│   │   ├── admin.routes.ts
+│   │   └── staffs                        - staff child modules
+│   │       ├── staff.controller.ts
+│   │       ├── staff.module.ts
+│   │       ├── staff.repository.ts
+│   │       └── staff.service.ts
+│   ├── auth                              - auth modules
+│   │   ├── auth-response.dto.ts
+│   │   ├── auth.controller.ts
+│   │   ├── auth.dto.ts
+│   │   ├── auth.module.ts
+│   │   └── auth.service.ts
+│   ├── healthz                           - healthcheck modules
+│   │   ├── healthz.controller.ts
+│   │   └── healthz.module.ts
+│   ├── index.ts
+│   └── seed                              - seed modules
+│       ├── seed.module.ts
+│       └── seed.service.ts
+├── app.controller.ts                     
+├── app.module.ts
+├── app.service.ts
+├── common                                - common modules
+│   ├── api_response
+│   ├── constants
+│   ├── database
+│   ├── exception
+│   ├── filters
+│   ├── index.ts
+│   ├── middleware
+│   └── types
+├── config     
+│   ├── config-loader
+│   ├── env
+│   ├── index.ts
+│   ├── interceptors
+│   ├── logger
+│   └── orm
+├── db
+│   ├── drizzle
+│   ├── index.ts
+│   ├── migrations
+│   └── schemas
+├── main.ts
+├── services
+│   ├── auth
+│   │   ├── decorators
+│   │   ├── guards
+│   │   └── strategies
+│   ├── email
+│   │   ├── email.module.ts
+│   │   ├── email.service.ts
+│   ├── pagination
+│   └── storage
+└── utils            
 ```
 
 ## 🚀 Getting Started
@@ -226,3 +267,10 @@ For issues and questions:
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## dev env
+https://readytowork.atlassian.net/wiki/spaces/RW/pages/3417276516/nestjs+backend+env+rtw-np
+
+## dev URLS
+health: https://nest-backend-skeleton-dot-rtw-np.as.r.appspot.com/api/v1/healthz
+swagger : https://nest-backend-skeleton-dot-rtw-np.as.r.appspot.com/api

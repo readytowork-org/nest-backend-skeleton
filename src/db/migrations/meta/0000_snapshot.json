@@ -1,11 +1,11 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "22ca775e-6e0e-40dc-aeb8-bb00e9ac05b0",
+  "id": "17be9443-fc11-41a6-8be0-a1ba4974a7ff",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "users": {
-      "name": "users",
+    "staffs": {
+      "name": "staffs",
       "columns": {
         "id": {
           "name": "id",
@@ -14,22 +14,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "first_name": {
-          "name": "first_name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "middle_name": {
-          "name": "middle_name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "last_name": {
-          "name": "last_name",
+        "name": {
+          "name": "name",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
@@ -49,62 +35,21 @@
           "notNull": true,
           "autoincrement": false
         },
-        "auth_provider": {
-          "name": "auth_provider",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "phone_number": {
-          "name": "phone_number",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "role": {
           "name": "role",
-          "type": "enum('ADMIN','USER')",
+          "type": "enum('STAFF','ADMIN')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'ADMIN'"
+          "default": "'STAFF'"
         },
-        "address": {
-          "name": "address",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "enum('Active','Inactive','Suspended')",
+        "is_active": {
+          "name": "is_active",
+          "type": "tinyint",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "profile_picture": {
-          "name": "profile_picture",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "reset_password_token": {
-          "name": "reset_password_token",
-          "type": "varchar(64)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "reset_password_token_expires_at": {
-          "name": "reset_password_token_expires_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": 0
         },
         "last_login_at": {
           "name": "last_login_at",
@@ -113,12 +58,21 @@
           "notNull": false,
           "autoincrement": false
         },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "onUpdate": true,
+          "default": "(now())"
         },
         "created_at": {
           "name": "created_at",
@@ -136,27 +90,19 @@
           "autoincrement": false
         }
       },
-      "indexes": {
-        "name_index": {
-          "name": "name_index",
-          "columns": [
-            "email"
-          ],
-          "isUnique": false
-        }
-      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "users_id": {
-          "name": "users_id",
+        "staffs_id": {
+          "name": "staffs_id",
           "columns": [
             "id"
           ]
         }
       },
       "uniqueConstraints": {
-        "users_email_unique": {
-          "name": "users_email_unique",
+        "staffs_email_unique": {
+          "name": "staffs_email_unique",
           "columns": [
             "email"
           ]

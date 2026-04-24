@@ -9,7 +9,7 @@ export class PaginationParams {
   baseQuery: AnyMySqlSelect;
   countQuery: AnyMySqlSelect;
   table: Schema;
-  filters: SQL[];
+  filters: (SQL<unknown> | undefined)[];
   page?: number;
   limit?: number;
   groupByColumn: AnyColumn[];
@@ -54,30 +54,20 @@ export class PaginationDto {
   @IsOptional()
   @IsInt()
   @Type(() => Number)
-  page?: number = 1;
+  page: number;
 
   @ApiPropertyOptional({
-    description:
-      'Maximum number of items per page. Accepts a positive integer or Number.POSITIVE_INFINITY for unlimited.',
+    description: 'Maximum number of items per page. Add -1 for unlimited data.',
     example: 10,
     type: Number,
   })
   @IsOptional()
-  @Type(() => {
-    return (value: any) => {
-      if (value === Number.POSITIVE_INFINITY.toString()) {
-        return Number.POSITIVE_INFINITY;
-      }
-      const num = Number(value);
-      return isNaN(num) ? undefined : num;
-    };
-  })
   limit?: number = 10;
 
   @ApiPropertyOptional({
     required: false,
     description:
-      'write json as { "field": "fieldName", "direction": "desc" | "desc" }',
+      'write json as { "field": "fieldName", "direction": "asc" | "desc" }',
     example: '{ "field": "createdAt", "direction": "desc" }',
   })
   @IsOptional()
