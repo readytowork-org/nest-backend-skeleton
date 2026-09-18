@@ -31,6 +31,10 @@ migrate-up:
 schema:
 	bash scripts/schema.sh
 
+link_skills_args = $(filter-out link-skills,$(MAKECMDGOALS))
+link-skills:
+	bash scripts/link-agent-skills.sh $(link_skills_args)
+
 install:
 	docker-compose exec api yarn install
 
@@ -43,3 +47,12 @@ start:
 	done
 	@echo "\nDatabase is ready!🚀"
 	yarn start:dev
+
+# This is a catch-all target to prevent make from complaining
+# when we pass additional arguments to our targets, like `make link-skills cursor`.
+# It assumes that the extra arguments are for the script and not other make targets.
+.PHONY: %
+%:
+	@# This is a deliberate empty recipe
+
+.PHONY: migrate-create migrate-generate migrate-up schema link-skills install start
