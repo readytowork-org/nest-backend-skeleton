@@ -54,6 +54,7 @@ If you add a new documentation file, list it here too.
 | `src/assets/templates/`     | Handlebars email templates.                                             |
 | `docker/`, `docker-compose.yml` | Local MySQL + API + Adminer setup.                                  |
 | `scripts/schema.sh`         | Scaffolds a new Drizzle schema file (see "Adding a new resource").      |
+| `scripts/link-agent-skills.sh` | Backs `make link-skills` (see "Commands"); (re)creates the agent skill symlinks. |
 | `scripts/cleanup.sh`        | Leftover from an earlier reorg; deletes files under `src/auth`, `src/todos`, `src/prisma`, none of which exist anymore. Do not run it. |
 | `test/`                     | Jest e2e config and the default `app.e2e-spec.ts` (see "Known inconsistencies": it currently fails). |
 
@@ -242,6 +243,7 @@ trust `README.md`'s command list (see "Documentation map").
 | `make migrate-generate <name>` / `make migrate-create <name>` | Both run `yarn drizzle:generate --name=<name>` inside Docker (identical; a naming duplicate in the `makefile`). |
 | `make migrate-up`              | Runs `yarn drizzle:migrate` inside Docker.                           |
 | `make schema`                  | Runs `scripts/schema.sh` to scaffold a new schema file.              |
+| `make link-skills`             | (Re)creates the `.claude/skills` and `.codex/skills` symlinks pointing at `.agents/skills`. Safe to re-run any time, e.g. after a fresh clone or if a symlink goes missing. Pass extra agent names to link more, e.g. `make link-skills cursor .windsurf`. |
 | `docker compose up`            | Runs `api`, `database` (MySQL 8), and `adminer`.                     |
 
 There is no `yarn type-check` or `yarn seed` script, despite `README.md`

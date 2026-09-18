@@ -50,3 +50,12 @@ changes.
   `.agents/skills/`, exposed via `.claude/skills` and `.codex/skills`
   symlinks. No application code or existing documentation was modified;
   nothing has been pushed.
+- **2026-09-18**: Added `make link-skills` (`scripts/link-agent-skills.sh`,
+  matching `go-gin-skeleton`) to (re)create the agent skill symlinks on
+  demand; accepts extra agent names as arguments (e.g.
+  `make link-skills cursor`). Adding it required adding the same
+  catch-all `%:` phony rule `go-gin-skeleton`'s `Makefile` already had,
+  which as a side effect also fixed a pre-existing bug: `make <anything>`
+  in this repo previously hard-failed with "No rule to make target
+  `.env`" when no `.env` file was present; it's now just a harmless
+  warning.
